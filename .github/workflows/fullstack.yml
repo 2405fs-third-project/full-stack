@@ -32,11 +32,11 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-      - name: Build and Push Docker image
+      - name: Build and Push Backend Docker image
         run: |
           cd backend
-          docker build -t ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev .
-          docker push ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev
+          docker build -t ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev-backend .
+          docker push ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev-backend
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -71,7 +71,9 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd ${{ secrets.SERVER_DIRECTORY_LOCATION }} || exit 1
+            echo "Pulling Docker images..."
             sudo docker-compose pull backend frontend
-            sudo docker-compose stop backend frontend
-            sudo docker-compose rm -f backend frontend
-            sudo docker-compose up -d backend frontend
+            echo "Stopping and removing old containers..."
+            sudo docker-compose down
+            echo "Starting new containers..."
+            sudo docker-compose up -d
