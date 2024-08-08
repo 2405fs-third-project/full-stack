@@ -1,12 +1,25 @@
-import React from "react";
-import "./Notice.css";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { usePosts } from "../context/PostContext";
+import { getPosts } from "../../api/Api"; // 올바른 경로로 수정
+import "./Notice.css";
 
 const Notice = () => {
-  const { posts } = usePosts();
+  const [posts, setPosts] = useState([]);
 
-  const postList = Array.isArray(posts) ? posts : [];
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const data = await getPosts();
+        // 데이터가 배열인지 확인하고 배열이 아닌 경우 빈 배열로 초기화
+        setPosts(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        setPosts([]); // 에러가 발생할 경우 빈 배열로 초기화
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   return (
     <div className="notice-container">
@@ -25,7 +38,7 @@ const Notice = () => {
             </tr>
           </thead>
           <tbody>
-            {postList.map((post, index) => (
+            {posts.map((post, index) => (
               <tr key={post.id}>
                 <td>{index + 1}</td>
                 <td>{post.type}</td>
@@ -44,26 +57,6 @@ const Notice = () => {
           <Link to="/writepost">
             <button className="write-button">글쓰기</button>
           </Link>
-        </div>
-        <div className="pagination">
-          <button className="page-button">1</button>
-          <button className="page-button">2</button>
-          <button className="page-button">3</button>
-          <button className="page-button">4</button>
-        </div>
-        <div className="search-container">
-          <select className="search-select">
-            <option value="title+content">제목+내용</option>
-            <option value="title">제목</option>
-            <option value="content">내용</option>
-            <option value="author">글쓴이</option>
-          </select>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="검색어 입력"
-          />
-          <button className="search-button">검색</button>
         </div>
       </div>
     </div>
