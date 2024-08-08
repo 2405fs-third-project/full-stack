@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import "./WritePost.css";
 import { Link, useNavigate } from "react-router-dom";
 import { usePosts } from "../context/PostContext";
+import { createPost } from "../../api/Api"; // 올바른 경로로 수정
+import "./WritePost.css";
 
 const WritePost = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ const WritePost = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newPost = {
       title: formData.title,
@@ -36,8 +37,13 @@ const WritePost = () => {
       recommendations: 0,
       image: formData.image, // 이미지 파일 추가
     };
-    addPost(newPost);
-    navigate("/notice");
+
+    try {
+      await createPost(newPost);
+      navigate("/notice");
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
   };
 
   const handleCancel = () => {

@@ -1,44 +1,51 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { usePosts } from "../context/PostContext";
+import {
+  getPost,
+  updateRecommendation,
+  decreaseRecommendation,
+  deletePost,
+  editPost,
+  incrementViews,
+} from "../../api/Api"; // 올바른 경로로 수정
 import "./PostDetail.css";
 
 const PostDetail = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const {
-    posts,
-    updateRecommendation,
-    decreaseRecommendation,
-    deletePost,
-    editPost,
-    incrementViews,
-  } = usePosts();
+  const [post, setPost] = useState(null);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
   const [editingCommentIndex, setEditingCommentIndex] = useState(null);
   const [editedComment, setEditedComment] = useState("");
-  const hasIncremented = useRef(false);
 
   useEffect(() => {
-    if (!hasIncremented.current) {
-      incrementViews(parseInt(postId));
-      hasIncremented.current = true;
-    }
-  }, [postId, incrementViews]);
+    const fetchPost = async () => {
+      try {
+        const data = await getPost(postId);
+        setPost(data);
+        incrementViews(postId);
+      } catch (error) {
+        console.error("Error fetching post:", error);
+      }
+    };
 
-  const postList = Array.isArray(posts) ? posts : [];
-  const post = postList.find((p) => p.id === parseInt(postId));
+    fetchPost();
+  }, [postId]);
 
   if (!post) {
-    return <div>Post not found</div>;
+    return <div>Loading...</div>;
   }
 
-  const handleDelete = () => {
-    deletePost(post.id);
-    navigate("/notice");
+  const handleDelete = async () => {
+    try {
+      await deletePost(post.id);
+      navigate("/notice");
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
   };
 
   const handleEdit = () => {
@@ -46,10 +53,13 @@ const PostDetail = () => {
     setEditedContent(post.content);
   };
 
-  const handleEditSubmit = () => {
-    const updatedPost = { ...post, content: editedContent };
-    editPost(updatedPost);
-    setIsEditing(false);
+  const handleEditSubmit = async () => {
+    try {
+      await editPost({ ...post, content: editedContent });
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error editing post:", error);
+    }
   };
 
   const handleCommentSubmit = (e) => {
@@ -97,14 +107,7 @@ const PostDetail = () => {
           <button onClick={() => setIsEditing(false)}>취소</button>
         </div>
       ) : (
-        <div className="post-content">
-          {post.content}
-          {post.image && (
-            <div className="post-image">
-              <img src={URL.createObjectURL(post.image)} alt="Post" />
-            </div>
-          )}
-        </div>
+        <div className="post-content">{post.content}</div>
       )}
       <div className="post-botton">
         <div className="post-actions">
