@@ -70,7 +70,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
-            cd /fullstack/full-stack
+            cd ${{ secrets.SERVER_DIRECTORY_LOCATION }} || exit 1
             sudo docker-compose pull backend frontend
             sudo docker-compose stop backend frontend
             sudo docker-compose rm -f backend frontend
