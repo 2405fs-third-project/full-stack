@@ -55,7 +55,7 @@ jobs:
       - name: Build and Push Frontend Docker image
         run: |
           cd frontend
-          docker build -t ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev-frontend -f ./path/to/frontend/Dockerfile .
+          docker build -t ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev-frontend -f Dockerfile .
           docker push ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev-frontend
 
   deploy:
