@@ -1,0 +1,95 @@
+.signup_1 {
+  display: flex;
+  justify-content: center;
+}
+
+.signup_box_1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  width: 448px;
+  height: 535px;
+  background-color: #fff;
+}
+
+.signup_box_1 h2 {
+  width: 448px;
+  height: 20px;
+}
+
+.signup_box_1 h2,
+.signup_box_1 h3 {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.info_text p {
+  text-align: left;
+  font-size: 0.75rem;
+  color: #5a6561;
+}
+
+.font_bold {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #5a6561;
+}
+
+.terms span {
+  text-align: left;
+  font-size: 0.75rem;
+  color: black;
+}
+
+.checkbox_group {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  width: 448px;
+  height: 150px;
+  padding-top: 20px;
+}
+
+.checkbox_group label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  color: #5a6561;
+  font-size: 0.9rem;
+}
+
+.checkbox_group span {
+  color: #3e52bb;
+  font-size: 0.9rem;
+  padding-left: 5px;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin: 0.5rem 0;
+  border-bottom: 1px solid #d1d6da;
+}
+
+.signup_1_button {
+  width: 450px;
+  padding: 10px;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #ccc;
+  color: #fff;
+}
+
+.signup_1_button.active {
+  background-color: #000;
+  color: #fff;
+}
