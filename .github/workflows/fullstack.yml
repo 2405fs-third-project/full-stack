@@ -17,7 +17,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
-
+          
+      - name: Give execution rights on gradlew
+        run: chmod +x backend/gradlew
+        
       - name: Build with Gradle
         run: |
          cd backend
