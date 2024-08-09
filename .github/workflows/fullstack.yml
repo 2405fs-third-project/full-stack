@@ -80,6 +80,8 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd ${{ secrets.SERVER_DIRECTORY_LOCATION }} || exit 1
+            echo "Logging in to DockerHub..."
+            echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
             echo "Pulling Docker images..."
             sudo docker-compose pull backend frontend
             echo "Stopping and removing old containers..."
