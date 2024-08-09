@@ -1,0 +1,121 @@
+body {
+  background-color: #fff;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.notice-container {
+  margin: 0 600px;
+  height: 100%;
+  padding: 0;
+}
+
+.bulletin-board {
+  width: 100%;
+  background-color: #fff;
+  padding: 20px;
+}
+
+h2 {
+  text-align: start;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.post-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.post-table th,
+.post-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.post-table th {
+  background-color: #f8f8f8;
+}
+
+.post-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.post-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0;
+}
+
+.write-button {
+  background-color: #363636;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 90px;
+  height: 35px;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.search-select {
+  padding: 5px;
+  margin-right: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  height: 35px;
+}
+
+.search-input {
+  padding: 5px;
+  margin-right: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  height: 23px;
+  width: 300px;
+}
+
+.search-button {
+  background-color: #363636;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  height: 35px;
+  width: 60px;
+  border-radius: 5px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.page-button {
+  background-color: white;
+  border: 1px solid #ddd;
+  color: #333333;
+  margin: 0 5px;
+  cursor: pointer;
+  width: 8.125px;
+  height: 20px;
+  border: none;
+}
+
+.page-button:hover {
+  background-color: white;
+}
