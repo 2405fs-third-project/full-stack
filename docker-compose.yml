@@ -1,9 +1,7 @@
 version: "3.8"
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: ${DOCKER_HUB_IMG_FRONTEND}
     container_name: frontend
     ports:
       - "3000:80"
@@ -13,9 +11,7 @@ services:
       - app-network
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ${DOCKER_HUB_IMG_BACKEND}
     container_name: backend
     ports:
       - "8080:8080"
