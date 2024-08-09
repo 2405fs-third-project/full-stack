@@ -90,7 +90,7 @@ jobs:
             echo "Pulling Docker images..."
             sudo docker pull ${{ env.DOCKER_IMAGE_BACKEND }}
             sudo docker pull ${{ env.DOCKER_IMAGE_FRONTEND }}
-
+            cd /fullstack/full-stack
             echo "Stopping and removing old containers..."
             sudo docker-compose down
 
