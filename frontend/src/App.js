@@ -12,8 +12,8 @@ function App() {
     <PostProvider>
       <Router>
         <Routes>
-          <Route path="/" element={<Signup />} />
-          <Route path="/Signup2" element={<Signup2 />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup2" element={<Signup2 />} />
           <Route path="/notice" element={<Notice />} />
           <Route path="/writepost" element={<WritePost />} />
           <Route path="/post/:postId" element={<PostDetail />} />
