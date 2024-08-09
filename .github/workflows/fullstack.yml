@@ -8,6 +8,7 @@ on:
 env:
   DOCKER_IMAGE_BACKEND: ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev-backend
   DOCKER_IMAGE_FRONTEND: ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev-frontend
+  DOCKER_COMPOSE_LOCATION : /home/ubuntu/fullstack/full-stack
 
 jobs:
   build-backend:
@@ -90,7 +91,7 @@ jobs:
             echo "Pulling Docker images..."
             sudo docker pull ${{ env.DOCKER_IMAGE_BACKEND }}
             sudo docker pull ${{ env.DOCKER_IMAGE_FRONTEND }}
-            cd /fullstack/full-stack
+            cd ${{ env.DOCKER_COMPOSE_LOCATION }}
             echo "Stopping and removing old containers..."
             sudo docker-compose down
 
