@@ -1,0 +1,24 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+.main_wrap {
+  display: flex;
+  height: 100vh;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  background-color: #1e1f21;
+  color: white;
+  align-items: center;
+  padding-top: 100px;
+  margin-left: 100px;
+  width: calc(100% - 100px);
+  min-height: calc(100vh - 150px);
+  box-sizing: border-box;
+  overflow: auto; /* 내용이 많을 경우 스크롤 가능하도록 설정 */
+}
