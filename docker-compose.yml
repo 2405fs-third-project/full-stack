@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   frontend:
-    image: ${DOCKER_HUB_IMG_FRONTEND}
+    image: codingold/didacto-app-dev-frontend:latest
     container_name: frontend
     ports:
       - "3000:80"
@@ -11,7 +11,7 @@ services:
       - app-network
 
   backend:
-    image: ${DOCKER_HUB_IMG_BACKEND}
+    image: codingold/didacto-app-dev-backend:latest
     container_name: backend
     ports:
       - "8080:8080"
