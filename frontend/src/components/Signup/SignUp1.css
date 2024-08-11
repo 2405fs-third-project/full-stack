@@ -1,6 +1,8 @@
 .signup_1 {
   display: flex;
   justify-content: center;
+  height: 100vh;
+  font-family: Pretendard, Karla, sans-serif;
 }
 
 .signup_box_1 {
@@ -17,6 +19,8 @@
 .signup_box_1 h2 {
   width: 448px;
   height: 20px;
+  color: black;
+  margin-left: 0;
 }
 
 .signup_box_1 h2,

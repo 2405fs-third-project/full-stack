@@ -120,7 +120,7 @@ const WritePost = () => {
             <input type="checkbox" name="퍼가기 금지" /> 퍼가기 금지
           </label>
           <label>
-            <input type="checkbox" name="댓글 허용" /> 댓글 허용
+            <input type="checkbox" name="댓글 금지" /> 댓글 금지
           </label>
           <label>
             <input type="checkbox" name="알림 안 받기" /> 알림 안 받기

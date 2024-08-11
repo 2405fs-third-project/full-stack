@@ -4,6 +4,19 @@ import AuthService from "../../service/AuthService";
 import "./SignUp2.css";
 
 const SignUp2 = () => {
+  useEffect(() => {
+    const navWrap = document.querySelector(".nav_wrap");
+    if (navWrap) {
+      navWrap.style.display = "none";
+    }
+
+    return () => {
+      if (navWrap) {
+        navWrap.style.display = "flex";
+      }
+    };
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     phoneNum: "",
@@ -15,7 +28,7 @@ const SignUp2 = () => {
     passwordMismatch: false,
   });
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   useEffect(() => {
     if (message) {
@@ -35,6 +48,10 @@ const SignUp2 = () => {
           name === "confirmPassword" && formData.password !== value,
       });
     }
+  };
+
+  const handleLoginClick2 = () => {
+    navigate("/login"); // navigate 사용
   };
 
   const handleSubmit = async (event) => {
@@ -134,9 +151,8 @@ const SignUp2 = () => {
             </button>
           </form>
           {message && <p>{message}</p>}
-          <Link to="/login">
-            <button>로그인 페이지로 이동</button>
-          </Link>
+
+          <button onClick={handleLoginClick2}>로그인 페이지로 이동</button>
         </div>
       </div>
     </div>
