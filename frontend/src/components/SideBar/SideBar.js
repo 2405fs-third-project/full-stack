@@ -15,10 +15,14 @@ const NavBar = () => {
     Navigate("/");
   };
 
+  const handleHomeClick2 = () => {
+    Navigate("/notice");
+  };
+
   return (
     <div className="sidebar_wrap">
       <div className="logo">
-      <img src={cinema} className="main_logo" alt="main_logo" />
+        <img src={cinema} className="main_logo" alt="main_logo" />
       </div>
       <div className="sidebar_center">
         <div className="sidebar_item" onClick={handleHomeClick}>
@@ -26,7 +30,7 @@ const NavBar = () => {
           <div className="label">HOME</div>
         </div>
         <div className="sidebar_item">
-          <BsChatSquareText className="icon" />
+          <BsChatSquareText className="icon" onClick={handleHomeClick2} />
           <div className="label">COMMUNITY</div>
         </div>
         <div className="sidebar_item">
@@ -34,7 +38,7 @@ const NavBar = () => {
           <div className="label">MOVIE</div>
         </div>
         <div className="sidebar_item">
-          <SiThemoviedatabase  className="icon"/>
+          <SiThemoviedatabase className="icon" />
           <div className="label">RECOMMEND</div>
         </div>
       </div>

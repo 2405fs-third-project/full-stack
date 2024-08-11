@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
+  const navigate = useNavigate(); // useNavigate 훅을 올바르게 사용
+
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
 
@@ -12,7 +15,7 @@ const Login = () => {
   const handleEmail = (e) => {
     setEmail(e.target.value);
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i; // 이메일 형식
-    if (regex.test(email)) {
+    if (regex.test(e.target.value)) {
       setEmailValid(true);
     } else {
       setEmailValid(false);
@@ -22,7 +25,7 @@ const Login = () => {
   const handlePassword = (e) => {
     setPw(e.target.value);
     const regex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,25}$/; // 영문 숫자 조합 8자리 이상
-    if (regex.test(pw)) {
+    if (regex.test(e.target.value)) {
       setPwValid(true);
     } else {
       setPwValid(false);
@@ -36,6 +39,10 @@ const Login = () => {
       return;
     }
     // 로그인 로직 실행
+  };
+
+  const handleSignupClick = () => {
+    navigate("/signup"); // useNavigate 훅을 사용하여 페이지 이동
   };
 
   return (
@@ -86,7 +93,9 @@ const Login = () => {
             로그인
           </button>
 
-          <button className="signup_btn">회원가입</button>
+          <button className="signup_btn" onClick={handleSignupClick}>
+            회원가입
+          </button>
         </div>
       </div>
     </div>

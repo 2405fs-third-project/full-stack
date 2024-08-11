@@ -1,42 +1,43 @@
 body {
-  background-color: #fff;
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
 }
 
 .notice-container {
-  margin: 0 600px;
-  height: 100%;
-  padding: 0;
+  padding: 100px 0 0 100px;
+  height: 100vh;
+  min-height: calc(100vh - 150px);
+  background-color: #1e1f21;
 }
 
 .bulletin-board {
-  width: 100%;
-  background-color: #fff;
-  padding: 20px;
+  width: calc(100% - 100px);
+  background-color: #1e1f21;
+  padding: 20px 0 0 20px;
 }
 
 h2 {
   text-align: start;
-  color: #333;
+  color: #dddddd;
   margin-bottom: 20px;
+  margin-left: 20px;
 }
 
 .post-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  margin-left: 20px;
 }
 
 .post-table th,
 .post-table td {
   padding: 10px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #4a4a4a;
 }
 
 .post-table th {
-  background-color: #f8f8f8;
+  background-color: #4a4a4a;
+  color: #dddddd;
 }
 
 .post-table tr:hover {
@@ -55,7 +56,7 @@ h2 {
 
 .write-button {
   background-color: #363636;
-  color: white;
+  color: #dddddd;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;

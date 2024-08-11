@@ -10,28 +10,33 @@ const Header = () => {
   const handleLoginClick = () => {
     Navigate("/login");
   };
+
+  const handleLoginClick2 = () => {
+    Navigate("/signup");
+  };
+
   return (
     <div className="nav_wrap">
       <div className="search">
-        <FaSearch style={{ fontSize: "20px" }}/>
+        <FaSearch style={{ fontSize: "20px" }} />
       </div>
 
       <div className="nav_center">
         <div className="search_wrap">
-          <input
-            type="text"
-            placeholder="검색하기"
-            className="search_input"
-          />
+          <input type="text" placeholder="검색하기" className="search_input" />
         </div>
       </div>
 
       <div className="nav_right">
-        <div className="my_page"><IoPersonCircleOutline /></div>
+        <div className="my_page">
+          <IoPersonCircleOutline />
+        </div>
         <div className="login" onClick={handleLoginClick}>
           로그인
         </div>
-        <div className="signup">회원가입</div>
+        <div className="signup" onClick={handleLoginClick2}>
+          회원가입
+        </div>
       </div>
     </div>
   );
