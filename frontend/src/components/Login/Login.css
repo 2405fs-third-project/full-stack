@@ -1,87 +1,88 @@
 .login_container {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .login_container .login {
-    padding-top: 0;
-    max-width: 448px;
-    width: 100%;
-    margin: 0 auto;
-    font-family: Pretendard, Karla, sans-serif;
-  }
-  
-  .login_container .login_title {
-    display: flex;
-    flex-direction: column;
-    margin-top: 24px;
-  }
-  
-  .login_container .input_wrap {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .id_box,
-  .pw_box {
-    font-size: 14px;
-    line-height: 20px;
-    color: rgb(51, 61, 75);
-    font-family: Pretendard, Karla, sans-serif;
-    cursor: default;
-  }
-  
-  .pw_box {
-    margin: 10px 0;
-  }
-  
-  .error_message {
-    font-size: 14px;
-    line-height: 20px;
-    margin-top: 4px;
-    color: rgb(248, 113, 113);
-    font-family: Pretendard, Karla, sans-serif;
-  }
-  
-  .input {
-    padding: 0 16px 0 16px;
-    height: 50px;
-    font-size: 15px;
-    line-height: 22px;
-    border: 1px solid rgb(176 184 193);
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-family: Pretendard, Karla, sans-serif;
-  }
-  
-  .input.error {
-    border: 1px solid rgb(248 113 113);
-  }
-  
-  .btn_wrap {
-    display: flex;
-    flex-direction: column;
-    margin-top: 16px;
-  }
-  
-  .login_btn,
-  .signup_btn {
-    margin: 10px 0;
-    height: 48px;
-    padding-left: 16px;
-    padding-right: 16px;
-    font-size: 14px;
-    border-radius: 5px;
-    border: 0 solid #e5e8eb;
-    font-family: Pretendard, Karla, sans-serif;
-    cursor: pointer;
-  }
-  
-  .login_btn:active,
-  .signup_btn:active {
-    background-color: rgb(51, 61, 75);
-    color: white;
-  }
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login_container .login {
+  padding-top: 0;
+  max-width: 448px;
+  width: 100%;
+  margin: 0 auto;
+  font-family: Pretendard, Karla, sans-serif;
+}
+
+.login_container .login_title {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+}
+
+.login_container .input_wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.id_box,
+.pw_box {
+  font-size: 14px;
+  line-height: 20px;
+  color: rgb(51, 61, 75);
+  font-family: Pretendard, Karla, sans-serif;
+  cursor: default;
+}
+
+.pw_box {
+  margin: 10px 0;
+}
+
+.error_message {
+  font-size: 14px;
+  line-height: 20px;
+  margin-top: 4px;
+  color: rgb(248, 113, 113);
+  font-family: Pretendard, Karla, sans-serif;
+}
+
+.input {
+  padding: 0 16px 0 16px;
+  height: 50px;
+  font-size: 15px;
+  line-height: 22px;
+  color: black;
+  border: 1px solid rgb(176 184 193);
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-family: Pretendard, Karla, sans-serif;
+}
+
+.input.error {
+  border: 1px solid rgb(248 113 113);
+}
+
+.btn_wrap {
+  display: flex;
+  flex-direction: column;
+  margin-top: 16px;
+}
+
+.login_btn,
+.signup_btn {
+  margin: 10px 0;
+  height: 48px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 0 solid #e5e8eb;
+  font-family: Pretendard, Karla, sans-serif;
+  cursor: pointer;
+}
+
+.login_btn:active,
+.signup_btn:active {
+  background-color: rgb(51, 61, 75);
+  color: white;
+}

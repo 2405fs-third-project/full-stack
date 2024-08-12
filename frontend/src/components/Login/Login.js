@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Login.css";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -8,6 +9,8 @@ const Login = () => {
   const [emailValid, setEmailValid] = useState(false);
   const [pwValid, setPwValid] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
@@ -36,6 +39,10 @@ const Login = () => {
       return;
     }
     // 로그인 로직 실행
+  };
+
+  const handleSignup = () => {
+    navigate("/Signup2");
   };
 
   return (
@@ -85,8 +92,9 @@ const Login = () => {
           <button className="login_btn" onClick={handleLogin}>
             로그인
           </button>
-
-          <button className="signup_btn">회원가입</button>
+          <button className="signup_btn" onClick={handleSignup}>
+            회원가입
+          </button>
         </div>
       </div>
     </div>
