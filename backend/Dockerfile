@@ -13,7 +13,7 @@ RUN chmod +x gradlew
 RUN ./gradlew build
 
 # 빌드 결과물 복사 및 실행
-COPY /app/build/libs/*.jar app.jar
+COPY /app/build/libs/backend-0.0.1-SNAPSHOT-plain.jar app.jar
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 
  
