@@ -6,9 +6,9 @@ on:
       - main
 
 env:
-  DOCKER_IMAGE_BACKEND: ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev-backend
-  DOCKER_IMAGE_FRONTEND: ${{ secrets.DOCKER_HUB_USER }}/didacto-app-dev-frontend
-  DOCKER_COMPOSE_LOCATION : /home/ubuntu/fullstack/full-stack
+  DOCKER_IMAGE_BACKEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-backend
+  DOCKER_IMAGE_FRONTEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-frontend
+  DOCKER_COMPOSE_LOCATION: /home/ubuntu/fullstack/full-stack
 
 jobs:
   build-backend:
@@ -22,11 +22,11 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 17
-          distribution: 'temurin'
-          
+          distribution: "temurin"
+
       - name: Give execution rights on gradlew
         run: chmod +x backend/gradlew
-        
+
       - name: Build with Gradle
         run: |
           cd backend
@@ -87,11 +87,12 @@ jobs:
           script: |
             echo "Logging in to DockerHub..."
             echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
-            
+            cd ${{ env.DOCKER_COMPOSE_LOCATION }}
+
             echo "Pulling Docker images..."
             sudo docker pull ${{ env.DOCKER_IMAGE_BACKEND }}
             sudo docker pull ${{ env.DOCKER_IMAGE_FRONTEND }}
-            cd ${{ env.DOCKER_COMPOSE_LOCATION }}
+
             echo "Stopping and removing old containers..."
             sudo docker-compose down
 
