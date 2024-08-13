@@ -32,4 +32,5 @@ tasks.named('test') {
 jar {
     archiveBaseName = 'backend'
     version = '0.0.1-SNAPSHOT'
+	enabled = false
 }

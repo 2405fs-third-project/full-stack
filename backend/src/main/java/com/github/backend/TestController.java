@@ -13,7 +13,7 @@ public class TestController {
 
     @GetMapping("/hello")
     public ResponseEntity<Object> testApi() {
-        String result = "API 통신에 성공하였습니다.";
+        String result = "API 통신에 성공하였습니다."+ version;
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

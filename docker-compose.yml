@@ -1,7 +1,9 @@
 version: "3.8"
 services:
   frontend:
-    image: codingold/filmfinder-app-frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: frontend
     ports:
       - "3000:80"
@@ -11,7 +13,9 @@ services:
       - app-network
 
   backend:
-    image: codingold/filmfinder-app-backend:latest
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: backend
     ports:
       - "8080:8080"
