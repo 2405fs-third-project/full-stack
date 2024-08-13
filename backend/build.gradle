@@ -34,3 +34,7 @@ jar {
     version = '0.0.1-SNAPSHOT'
 	enabled = false
 }
+
+bootRun {
+	jvmArgs = ['-Dspring.profiles.active=dev']
+}
