@@ -11,6 +11,7 @@ import Layout from "./components/Layout";
 import Login from "./components/Login/Login";
 import MainForm from "./components/Main/MainForm";
 import SideBar from "./components/SideBar/SideBar";
+import MyPage from "./components/MyPage/MyPage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/post/:postId" element={<PostDetail />} />
             <Route path="/" element={<MainForm />} />
             <Route path="login" element={<Login />} />
+            <Route path="mypage" element={<MyPage />} />
           </Routes>
         </Layout>
       </Router>
