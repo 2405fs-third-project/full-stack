@@ -1,4 +1,4 @@
-package com.github.backend;
+package com.github.backend.controller;
 
 
 import org.springframework.http.HttpStatus;
