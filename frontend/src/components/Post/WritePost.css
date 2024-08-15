@@ -6,14 +6,19 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fff;
+  background-color: #1e1f21;
   padding: 20px;
+  padding-top: 150px;
+  height: 100vh;
+  min-height: calc(100vh - 150px);
 }
 
 .write-post-form {
-  background-color: #fff;
+  background-color: #111111;
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid #2d2d2d;
+  color: #d2dddd;
+  border-radius: 5px;
   width: 1000px;
 }
 
@@ -41,12 +46,24 @@ body {
   resize: none;
 }
 
+#tab {
+  background-color: #222222;
+  color: #bbbbbb;
+  border: 1px bold #444444;
+}
+
 #title {
   width: 855px;
+  background-color: #000000;
+  color: #3a3a3a;
+  border: 1px bold #222222;
 }
 
 #content {
   width: 955px;
+  background-color: #111111;
+  border: 1px bold #939393;
+  color: #bbbbbb;
 }
 
 .row {

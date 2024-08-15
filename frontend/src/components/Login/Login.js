@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import { Navigate, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
+  const navigate = useNavigate(); // useNavigate 훅을 올바르게 사용
+  const { login, user } = useAuth();
+
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [pwTouched, setPwTouched] = useState(false);
+
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
 
@@ -10,12 +18,13 @@ const Login = () => {
   const [pwValid, setPwValid] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
-  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState(""); // 추가
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
+    setEmailTouched(true);
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i; // 이메일 형식
-    if (regex.test(email)) {
+    if (regex.test(e.target.value)) {
       setEmailValid(true);
     } else {
       setEmailValid(false);
@@ -24,41 +33,74 @@ const Login = () => {
 
   const handlePassword = (e) => {
     setPw(e.target.value);
+    setPwTouched(true);
     const regex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,25}$/; // 영문 숫자 조합 8자리 이상
-    if (regex.test(pw)) {
+    if (regex.test(e.target.value)) {
       setPwValid(true);
     } else {
       setPwValid(false);
     }
   };
 
-  const handleLogin = () => {
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  const handleLogin = async () => {
     setSubmitAttempted(true);
+    setEmailTouched(true);
+    setPwTouched(true);
+    setErrorMessage(""); // 추가
     if (!emailValid || !pwValid) {
-      // 로그인 로직이 실행되지 않도록 유효성 검사에 실패한 경우 종료
       return;
     }
-    // 로그인 로직 실행
+
+    try {
+      const response = await axios.post(
+        "/api/user/login",
+        {
+          email: email,
+          password: pw,
+        },
+        {
+          withCredentials: true, // CSRF 보호를 위해 쿠키 포함 (추가)
+        }
+      );
+   
+      if (response.data.success) {
+        // 로그인 성공 처리
+        console.log("로그인 성공:", response.data);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        login(response.data.user, response.data.token); // 사용자 정보를 AuthContext에 설정
+        navigate("/");
+      } else {
+        setErrorMessage(response.data.message || "로그인에 실패했습니다."); // 추가
+      }
+    } catch (error) {
+      console.error("로그인 오류:", error);
+      setErrorMessage(
+        error.response?.data?.message || "로그인 중 오류가 발생했습니다."
+      ); // 추가
+    }
   };
 
-  const handleSignup = () => {
-    navigate("/Signup2");
+  const handleSignupClick = () => {
+    navigate("/signup"); // useNavigate 훅을 사용하여 페이지 이동
   };
 
   return (
     <div className="login_container">
       <div className="login">
-        <h1>Movie Talk</h1>
+        <h1>로그인</h1>
         <div className="login_title">
           <div className="input_wrap">
             <div className="id_box">아이디</div>
             <input
               type="text"
               className={`input ${
-                (!emailValid && submitAttempted) ||
-                (email.length > 0 && !emailValid)
-                  ? "error"
-                  : ""
+                (emailTouched || submitAttempted) && !emailValid ? "error" : ""
               }`}
               placeholder="이메일을 입력해주세요."
               value={email}
@@ -66,7 +108,7 @@ const Login = () => {
             />
           </div>
           <div className="error_message">
-            {!emailValid && submitAttempted && (
+            {(emailTouched || submitAttempted) && !emailValid && (
               <div>이메일을 입력해주세요.</div>
             )}
           </div>
@@ -75,9 +117,7 @@ const Login = () => {
           <input
             type="password"
             className={`input ${
-              (!pwValid && submitAttempted) || (pw.length > 0 && !pwValid)
-                ? "error"
-                : ""
+              (pwTouched || submitAttempted) && !pwValid ? "error" : ""
             }`}
             placeholder="비밀번호를 입력해주세요."
             value={pw}
@@ -85,14 +125,23 @@ const Login = () => {
           />
         </div>
         <div className="error_message">
-          {!pwValid && submitAttempted && <div>비밀번호를 입력해주세요.</div>}
+          {(pwTouched || submitAttempted) && !pwValid && (
+            <div>비밀번호를 입력해주세요.</div>
+          )}
+
+          {errorMessage && (
+            <div className="error_message">
+              <div>{errorMessage}</div>
+            </div>
+          )}
         </div>
 
         <div className="btn_wrap">
           <button className="login_btn" onClick={handleLogin}>
             로그인
           </button>
-          <button className="signup_btn" onClick={handleSignup}>
+
+          <button className="signup_btn" onClick={handleSignupClick}>
             회원가입
           </button>
         </div>
