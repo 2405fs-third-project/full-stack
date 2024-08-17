@@ -24,20 +24,19 @@ const PostDetail = () => {
   const [editingCommentIndex, setEditingCommentIndex] = useState(null);
   const [editedComment, setEditedComment] = useState("");
 
-  // 중복 호출 방지용 플래그
   const hasIncremented = useRef(true);
 
   useEffect(() => {
     const fetchPost = async (id) => {
       try {
         if (!hasIncremented.current) {
-          await incrementViews(id); // 조회수 1 증가
-          hasIncremented.current = true; // 조회수 증가 플래그 설정
+          await incrementViews(id);
+          hasIncremented.current = true;
         }
         const data = await getPost(id);
         setPost(data);
-        setEditedTitle(data.title);
-        setEditedContent(data.content);
+        setEditedTitle(data.post_name);
+        setEditedContent(data.post_content);
       } catch (error) {
         console.error("Error fetching post:", error);
       }
@@ -45,7 +44,6 @@ const PostDetail = () => {
 
     fetchPost(Number(postId));
 
-    // 컴포넌트 언마운트 시 플래그를 리셋
     return () => {
       hasIncremented.current = false;
     };
@@ -76,9 +74,13 @@ const PostDetail = () => {
 
   const handleEditSubmit = async () => {
     try {
-      await updatePost({ ...post, title: editedTitle, content: editedContent });
+      await updatePost({
+        ...post,
+        post_name: editedTitle,
+        post_content: editedContent,
+      });
       setIsEditing(false);
-      setPost({ ...post, title: editedTitle, content: editedContent });
+      setPost({ ...post, post_name: editedTitle, post_content: editedContent });
     } catch (error) {
       console.error("Error updating post:", error);
     }
@@ -87,7 +89,7 @@ const PostDetail = () => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addComment(post.id, comment);
+      await addComment(post.id, post.user_id, comment);
       const updatedPost = await getPost(post.id);
       setPost(updatedPost);
       setComment("");
@@ -96,9 +98,9 @@ const PostDetail = () => {
     }
   };
 
-  const handleDeleteComment = async (index) => {
+  const handleDeleteComment = async (commentId) => {
     try {
-      await deleteComment(post.id, index);
+      await deleteComment(post.id, commentId);
       const updatedPost = await getPost(post.id);
       setPost(updatedPost);
     } catch (error) {
@@ -106,14 +108,17 @@ const PostDetail = () => {
     }
   };
 
-  const handleEditComment = async (index) => {
-    setEditingCommentIndex(index);
-    setEditedComment(post.comments[index]);
+  const handleEditComment = async (commentId) => {
+    setEditingCommentIndex(commentId);
+    const selectedComment = post.comments.find(
+      (comment) => comment.id === commentId
+    );
+    setEditedComment(selectedComment.reply_content);
   };
 
-  const handleEditCommentSubmit = async (index) => {
+  const handleEditCommentSubmit = async (commentId) => {
     try {
-      await updateComment(post.id, index, editedComment);
+      await updateComment(post.id, commentId, editedComment);
       const updatedPost = await getPost(post.id);
       setPost(updatedPost);
       setEditingCommentIndex(null);
@@ -138,13 +143,12 @@ const PostDetail = () => {
                 onChange={(e) => setEditedTitle(e.target.value)}
               />
             ) : (
-              post.title
+              post.post_name
             )}
           </h2>
           <div className="post-meta">
-            <span>{post.author}</span> | <span>{post.date}</span> |{" "}
-            <span>조회 {post.views}</span> |{" "}
-            <span>추천 {post.recommendations}</span>
+            <span>{post.author}</span> | <span>{post.post_create}</span> |{" "}
+            <span>조회 {post.views}</span> | <span>추천 {post.likes}</span>
           </div>
         </div>
         {isEditing ? (
@@ -158,14 +162,7 @@ const PostDetail = () => {
           </div>
         ) : (
           <div className="post-content">
-            {post.image && (
-              <img
-                src={URL.createObjectURL(post.image)}
-                alt="Attached"
-                className="post-image"
-              />
-            )}
-            <div>{post.content}</div>
+            <div>{post.post_content}</div>
           </div>
         )}
         <div className="post-bottom">
@@ -195,17 +192,17 @@ const PostDetail = () => {
             <button type="submit">등록</button>
           </form>
           <div className="comments-list">
-            {post.comments.map((c, index) => (
-              <div key={index} className="comment">
-                <div className="comment-author">{post.author}</div>
-                {editingCommentIndex === index ? (
+            {post.comments.map((c) => (
+              <div key={c.id} className="comment">
+                <div className="comment-author">{c.nickname}</div>
+                {editingCommentIndex === c.id ? (
                   <div className="edit-box">
                     <textarea
                       className="comment-edit-textarea"
                       value={editedComment}
                       onChange={(e) => setEditedComment(e.target.value)}
                     />
-                    <button onClick={() => handleEditCommentSubmit(index)}>
+                    <button onClick={() => handleEditCommentSubmit(c.id)}>
                       수정 완료
                     </button>
                     <button onClick={() => setEditingCommentIndex(null)}>
@@ -214,12 +211,12 @@ const PostDetail = () => {
                   </div>
                 ) : (
                   <div className="comment-box">
-                    <div className="comment-content">{c}</div>
+                    <div className="comment-content">{c.reply_content}</div>
                     <div className="edit-comment">
-                      <button onClick={() => handleEditComment(index)}>
+                      <button onClick={() => handleEditComment(c.id)}>
                         수정
                       </button>
-                      <button onClick={() => handleDeleteComment(index)}>
+                      <button onClick={() => handleDeleteComment(c.id)}>
                         삭제
                       </button>
                     </div>

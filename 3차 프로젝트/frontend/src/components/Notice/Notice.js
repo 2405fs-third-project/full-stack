@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getPosts } from "../../api/Api";
-import "./Notice.css";
+import { getPosts } from "../../api/Api"; // 경로 수정
 
 const Notice = () => {
   const [posts, setPosts] = useState([]);

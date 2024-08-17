@@ -23,6 +23,7 @@ const SignUp = () => {
     userId: "",
     password: "",
     confirmPassword: "",
+    nickName: "",
   });
   const [errors, setErrors] = useState({
     passwordMismatch: false,
@@ -141,6 +142,17 @@ const SignUp = () => {
               {errors.passwordMismatch && (
                 <div className="error">비밀번호가 일치하지 않습니다</div>
               )}
+            </div>
+            <div>
+              <label>닉네임</label>
+              <input
+                type="text"
+                name="nickName"
+                value={formData.nickName}
+                onChange={handleChange}
+                placeholder="닉네임을 입력해주세요."
+                required
+              />
             </div>
             <button
               type="submit"

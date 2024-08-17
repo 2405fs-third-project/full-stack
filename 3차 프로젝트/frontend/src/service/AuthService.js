@@ -1,9 +1,8 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8081/api/auth";
+const API_URL = "http://localhost:8080/api/posts/auth"; // 변경된 부분
 
 class AuthService {
-  // 회원가입
   async registerUser(userData) {
     try {
       const response = await axios.post(`${API_URL}/register`, userData);
@@ -13,7 +12,6 @@ class AuthService {
     }
   }
 
-  // 토큰 검증
   async validateToken(token) {
     try {
       const response = await axios.post(

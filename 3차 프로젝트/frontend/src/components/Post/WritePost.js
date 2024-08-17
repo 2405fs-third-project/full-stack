@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { createPost } from "../../api/Api";
-import "./WritePost.css";
+import { createPost } from "../../api/Api"; // 경로 수정
 
 const WritePost = () => {
   const [formData, setFormData] = useState({
