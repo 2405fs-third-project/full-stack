@@ -1,0 +1,124 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.write-post-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1e1f21;
+  padding: 20px;
+  padding-top: 150px;
+  height: 100vh;
+  min-height: calc(100vh - 150px);
+}
+
+.write-post-form {
+  background-color: #111111;
+  padding: 20px;
+  border: 1px solid #2d2d2d;
+  color: #d2dddd;
+  border-radius: 5px;
+  width: 1000px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form-group textarea {
+  height: 400px;
+  resize: none;
+}
+
+#tab {
+  background-color: #222222;
+  color: #bbbbbb;
+  border: 1px bold #444444;
+}
+
+#title {
+  width: 855px;
+  background-color: #000000;
+  color: #3a3a3a;
+  border: 1px bold #222222;
+}
+
+#content {
+  width: 955px;
+  background-color: #111111;
+  border: 1px bold #939393;
+  color: #bbbbbb;
+}
+
+.row {
+  display: flex;
+}
+
+.half {
+  width: 100px;
+}
+
+.file-upload-instructions,
+.file-upload-rules {
+  margin-bottom: 15px;
+  font-size: 12px;
+  color: #666;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.options label {
+  margin-right: 10px;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cancel-button,
+.submit-button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.cancel-button {
+  background-color: #ccc;
+  margin-right: 10px;
+}
+
+.submit-button {
+  background-color: #363636;
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: #252525;
+}
+
+.cancel-button:hover {
+  background-color: #8b8d8f;
+}
