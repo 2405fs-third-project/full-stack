@@ -18,8 +18,6 @@ public class JWTService {
 
 
     public String generateToken(String id) {
-        System.out.println(SECRET_KEY);
-        System.out.println(EXPIRATION);
         return Jwts.builder()
                 .setSubject(id)
                 .setIssuedAt(new Date(System.currentTimeMillis()))

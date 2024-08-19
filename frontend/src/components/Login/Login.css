@@ -1,5 +1,5 @@
 .login_container {
-  height: 100vh;
+  height: 80vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -13,9 +13,19 @@
   font-family: Pretendard, Karla, sans-serif;
 }
 
+.login h1 {
+  align-items: center;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
 .login_container .login_title {
   display: flex;
   flex-direction: column;
+  margin-top: 24px;
+}
+
+.login_title {
   margin-top: 24px;
 }
 
@@ -29,13 +39,14 @@
 .pw_box {
   font-size: 14px;
   line-height: 20px;
+  margin-bottom: 5px;
   color: rgb(51, 61, 75);
   font-family: Pretendard, Karla, sans-serif;
   cursor: default;
 }
 
 .pw_box {
-  margin: 10px 0;
+  margin-top: 10px;
 }
 
 .error_message {
@@ -51,6 +62,7 @@
   height: 50px;
   font-size: 15px;
   line-height: 22px;
+  color: black;
   border: 1px solid rgb(176 184 193);
   border-radius: 6px;
   box-sizing: border-box;
@@ -80,8 +92,3 @@
   cursor: pointer;
 }
 
-.login_btn:active,
-.signup_btn:active {
-  background-color: rgb(51, 61, 75);
-  color: white;
-}
