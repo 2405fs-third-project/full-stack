@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @AllArgsConstructor
 public class AuthenticationService {
@@ -20,10 +18,10 @@ public class AuthenticationService {
         User user = userRepository.findByUserId(userid).orElse(null);
 
         if(user == null){
-            return "아이디가 존재하지 않습니다.";
+            return MessageService.USER_NOT_FOUND.getMessage();
         }
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            return "비밀번호가 틀립니다.";
+            return MessageService.INVALID_PASSWORD.getMessage();
         }
 
         return jwtService.generateToken(userid);

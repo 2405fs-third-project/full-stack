@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Header.css";
 import { Navigate, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
@@ -6,6 +6,7 @@ import { IoPersonCircleOutline } from "react-icons/io5";
 
 const Header = () => {
   const Navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLoginClick = () => {
     Navigate("/login");
@@ -13,6 +14,17 @@ const Header = () => {
 
   const handleLoginClick2 = () => {
     Navigate("/signup");
+  };
+
+  const handleSearch = () => {
+    console.log("검색어", searchQuery);
+    setSearchQuery(""); // 검색 후 입력 값 초기화
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(e);
+    }
   };
 
   return (
@@ -23,7 +35,14 @@ const Header = () => {
 
       <div className="nav_center">
         <div className="search_wrap">
-          <input type="text" placeholder="검색하기" className="search_input" />
+          <input
+            type="text"
+            placeholder="검색하기"
+            className="search_input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
         </div>
       </div>
 
