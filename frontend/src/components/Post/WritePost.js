@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { usePosts } from "../context/PostContext";
-import { createPost } from "../../api/Api"; // 올바른 경로로 수정
-import "./WritePost.css";
+import { useNavigate } from "react-router-dom";
+import { createPost } from "../../api/Api"; // 경로 수정
 
 const WritePost = () => {
   const [formData, setFormData] = useState({
@@ -10,10 +8,10 @@ const WritePost = () => {
     password: "",
     title: "",
     content: "",
-    tab: "잡담", // 탭 선택에 대한 초기값 설정
-    image: null, // 이미지 파일 초기값 설정
+    tab: "잡담",
+    image: null,
   });
-  const { addPost } = usePosts();
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,27 +25,15 @@ const WritePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newPost = {
-      title: formData.title,
-      content: formData.content,
+    await createPost({
+      ...formData,
       author: "익명",
-      type: formData.tab, // 선택된 탭을 반영
       date: new Date().toISOString().split("T")[0],
       views: 0,
       recommendations: 0,
-      image: formData.image, // 이미지 파일 추가
-    };
-
-    try {
-      await createPost(newPost);
-      navigate("/notice");
-    } catch (error) {
-      console.error("Error creating post:", error);
-    }
-  };
-
-  const handleCancel = () => {
-    console.log("Form canceled");
+      comments: [],
+    });
+    navigate("/notice");
   };
 
   return (
@@ -130,35 +116,12 @@ const WritePost = () => {
           </label>
         </div>
         <div className="form-buttons">
-          <Link to="/notice">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="cancel-button"
-            >
-              돌아가기
-            </button>
-          </Link>
           <button
             type="button"
-            onClick={handleCancel}
             className="cancel-button"
+            onClick={() => navigate("/notice")}
           >
-            임시 저장
-          </button>
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="cancel-button"
-          >
-            임시 저장 불러오기
-          </button>
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="cancel-button"
-          >
-            미리 보기
+            돌아가기
           </button>
           <button type="submit" className="submit-button">
             등록

@@ -8,9 +8,8 @@ body {
   align-items: center;
   background-color: #1e1f21;
   padding: 20px;
-  padding-top: 150px;
-  height: 100vh;
-  min-height: calc(100vh - 150px);
+  padding-top: 50px;
+  height: 94.5vh;
 }
 
 .write-post-form {
@@ -19,7 +18,7 @@ body {
   border: 1px solid #2d2d2d;
   color: #d2dddd;
   border-radius: 5px;
-  width: 1000px;
+  margin-top: 70px;
 }
 
 .form-group {
@@ -55,7 +54,7 @@ body {
 #title {
   width: 855px;
   background-color: #000000;
-  color: #3a3a3a;
+  color: #656565;
   border: 1px bold #222222;
 }
 
@@ -115,10 +114,15 @@ body {
   color: white;
 }
 
+.cancel-button {
+  background-color: #363636;
+  color: white;
+}
+
 .submit-button:hover {
   background-color: #252525;
 }
 
 .cancel-button:hover {
-  background-color: #8b8d8f;
+  background-color: #252525;
 }
