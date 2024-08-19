@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Signup from "./components/Signup/SignUp1";
-import Signup2 from "./components/Signup/SignUp2";
+import TermsOfUse from "./components/Signup/TermsOfUse";
+import Signup from "./components/Signup/SignUp";
 import Notice from "./components/Notice/Notice";
 import WritePost from "./components/Post/WritePost";
 import PostDetail from "./components/Post/PostDetail";
@@ -46,11 +46,30 @@ function AppContent() {
 
 function App() {
   return (
+<<<<<<< HEAD
     <AuthProvider>
       <PostProvider>
         <AppContent />
       </PostProvider>
     </AuthProvider>
+=======
+    <PostProvider>
+      <Router>
+        <SideBar />
+        <Layout>
+          <Routes>
+            <Route path="/TermsOfUse" element={<TermsOfUse />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/notice" element={<Notice />} />
+            <Route path="/writepost" element={<WritePost />} />
+            <Route path="/post/:postId" element={<PostDetail />} />
+            <Route path="/" element={<MainForm />} />
+            <Route path="login" element={<Login />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </PostProvider>
+>>>>>>> cfc77ea2f1c036c12594d69a0098b5f636704b80
   );
 }
 

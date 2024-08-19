@@ -2,14 +2,11 @@ package com.github.backend.controller;
 
 
 import com.github.backend.model.User;
-import com.github.backend.repository.UserRepository;
 import com.github.backend.service.AuthenticationService;
-import com.github.backend.service.MessageService;
 import com.github.backend.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

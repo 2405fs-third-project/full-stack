@@ -4,15 +4,17 @@ body {
 
 .notice-container {
   padding: 100px 0 0 100px;
-  height: 100vh;
-  min-height: calc(100vh - 150px);
+  min-height: 94.5vh;
   background-color: #1e1f21;
+  overflow-y: hidden; /* 스크롤 제거 */
 }
 
 .bulletin-board {
   width: calc(100% - 100px);
   background-color: #1e1f21;
-  padding: 20px 0 0 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 h2 {
@@ -40,18 +42,28 @@ h2 {
   color: #dddddd;
 }
 
-.post-table tr:hover {
-  background-color: #f1f1f1;
+.post-table td a {
+  color: #9b9b9b;
+  text-decoration: none;
 }
 
-.post-table tr:nth-child(even) {
-  background-color: #f9f9f9;
+.post-table td a:hover {
+  color: #525252;
+}
+
+.post-info td {
+  color: #9b9b9b;
+}
+
+.post-table tr:hover {
+  background-color: #232323;
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  margin: 20px 0;
+  margin-top: 20px;
+  margin-right: 20px;
 }
 
 .write-button {
@@ -112,11 +124,12 @@ h2 {
   color: #333333;
   margin: 0 5px;
   cursor: pointer;
-  width: 8.125px;
-  height: 20px;
-  border: none;
+  width: 20px;
+  height: 30px;
+  border-radius: 3px;
 }
 
 .page-button:hover {
-  background-color: white;
+  background-color: #525252;
+  color: white;
 }

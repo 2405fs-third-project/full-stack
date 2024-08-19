@@ -13,7 +13,7 @@ const Header = () => {
   };
 
   const handleLoginClick2 = () => {
-    Navigate("/signup");
+    Navigate("/TermsOfUse");
   };
 
   const handleSearch = () => {
