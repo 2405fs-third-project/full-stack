@@ -42,7 +42,7 @@ const Login = () => {
   };
 
   const handleSignupClick = () => {
-    navigate("/signup"); // useNavigate 훅을 사용하여 페이지 이동
+    navigate("/TermsOfUse"); // useNavigate 훅을 사용하여 페이지 이동
   };
 
   return (

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/posts/auth"; // 변경된 부분
+const API_URL = "http://localhost:8080/api/user";
 
 class AuthService {
   async registerUser(userData) {

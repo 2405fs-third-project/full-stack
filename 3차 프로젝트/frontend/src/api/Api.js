@@ -13,46 +13,29 @@ export const getPost = async (id) => {
 };
 
 export const createPost = async (postData) => {
-  const formData = new FormData();
-  formData.append("user_id", postData.userId);
-  formData.append("post_number", postData.postNumber);
-  formData.append("post_name", postData.title);
-  formData.append("post_content", postData.content);
-  formData.append("views", 0);
-  formData.append("likes", 0);
-  formData.append("post_create", new Date().toISOString());
-
-  if (postData.image) {
-    formData.append("image", postData.image);
-  }
-
-  const response = await axios.post(API_URL, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const response = await axios.post(API_URL, postData);
   return response.data;
 };
 
 export const updatePost = async (updatedPost) => {
-  const response = await axios.put(`${API_URL}/${updatedPost.id}`, {
-    post_name: updatedPost.title,
-    post_content: updatedPost.content,
-  });
+  const response = await axios.put(
+    `${API_URL}/modify/${updatedPost.id}`,
+    updatedPost
+  );
   return response.data;
 };
 
 export const deletePost = async (id) => {
-  await axios.delete(`${API_URL}/${id}`);
+  await axios.delete(`${API_URL}/delete/${id}`);
 };
 
 export const updateRecommendation = async (id) => {
-  const response = await axios.patch(`${API_URL}/${id}/likes`, { amount: 1 });
+  const response = await axios.post(`${API_URL}/${id}/like`);
   return response.data;
 };
 
 export const decreaseRecommendation = async (id) => {
-  const response = await axios.patch(`${API_URL}/${id}/likes`, { amount: -1 });
+  const response = await axios.post(`${API_URL}/${id}/dislike`);
   return response.data;
 };
 

@@ -4,11 +4,9 @@ import "./TermsOfUse.css";
 
 const TermsOfUse = () => {
   useEffect(() => {
-    // 헤더를 숨깁니다.
     document.querySelector(".nav_wrap").style.display = "none";
 
     return () => {
-      // 컴포넌트가 언마운트될 때 헤더를 다시 보이도록 설정합니다.
       document.querySelector(".nav_wrap").style.display = "flex";
     };
   }, []);
@@ -110,7 +108,7 @@ const TermsOfUse = () => {
               마케팅 정보 수신 동의<span> (선택)</span>
             </label>
           </div>
-          <Link to="/SignUp2">
+          <Link to="/signup">
             <button
               className={`signup_1_button ${isButtonActive ? "active" : ""}`}
               disabled={!isButtonActive}

@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import TermsOfUse from "./components/Signup/TermsOfUse";
-import SignUp from "./components/Signup/SignUp";
+import Signup from "./components/Signup/SignUp";
 import Notice from "./components/Notice/Notice";
 import WritePost from "./components/Post/WritePost";
 import PostDetail from "./components/Post/PostDetail";
@@ -19,8 +19,8 @@ function App() {
         <SideBar />
         <Layout>
           <Routes>
-            <Route path="/signup" element={<TermsOfUse />} />
-            <Route path="/signup2" element={<SignUp />} />
+            <Route path="/TermsOfUse" element={<TermsOfUse />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/notice" element={<Notice />} />
             <Route path="/writepost" element={<WritePost />} />
             <Route path="/post/:postId" element={<PostDetail />} />

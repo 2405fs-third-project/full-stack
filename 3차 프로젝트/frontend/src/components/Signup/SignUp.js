@@ -19,11 +19,11 @@ const SignUp = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    phoneNum: "",
+    phone: "",
     userId: "",
     password: "",
     confirmPassword: "",
-    nickName: "",
+    nickname: "",
   });
   const [errors, setErrors] = useState({
     passwordMismatch: false,
@@ -103,8 +103,8 @@ const SignUp = () => {
               <label>핸드폰번호</label>
               <input
                 type="text"
-                name="phoneNum"
-                value={formData.phoneNum}
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
                 required
               />
@@ -147,8 +147,8 @@ const SignUp = () => {
               <label>닉네임</label>
               <input
                 type="text"
-                name="nickName"
-                value={formData.nickName}
+                name="nickname"
+                value={formData.nickname}
                 onChange={handleChange}
                 placeholder="닉네임을 입력해주세요."
                 required
