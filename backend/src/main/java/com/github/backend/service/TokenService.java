@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
-public class JWTService {
+public class TokenService {
     @Value("${jjwt.secret}")
     private String SECRET_KEY;
     @Value("${jjwt.expiration}")
@@ -17,9 +17,10 @@ public class JWTService {
 
 
 
-    public String generateToken(String id) {
+    public String generateToken(String id, String role) {
         return Jwts.builder()
                 .setSubject(id)
+                .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+EXPIRATION))
                 .signWith(SignatureAlgorithm.HS256,SECRET_KEY)
