@@ -78,7 +78,7 @@ jobs:
             cd ${{ env.DOCKER_COMPOSE_LOCATION }}
 
             echo "Stopping and removing old containers..."
-            sudo docker-compose down
+            sudo docker-compose down --rmi all
 
             echo "Pulling Docker images..."
             sudo docker pull ${{ env.DOCKER_IMAGE_BACKEND }}
