@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
-import { apiUrl } from "../../api/Api";
+
+const API_URL = "http://localhost:8080/api/";
 
 const Login = () => {
   const navigate = useNavigate(); // useNavigate 훅을 올바르게 사용
@@ -50,7 +51,7 @@ const Login = () => {
   }, [user, navigate]);
 
   const handleLogin = async () => {
-    console.log('API URL:', apiUrl);
+    console.log("API URL:", API_URL);
 
     setSubmitAttempted(true);
     setIdTouched(true);
@@ -62,7 +63,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        `${apiUrl}/user/login`,
+        `${API_URL}/user/login`,
         {
           userId: userId,
           password: pw,
