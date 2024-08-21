@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import TermsOfUse from "./components/Signup/TermsOfUse";
 import Signup from "./components/Signup/SignUp";
@@ -6,6 +6,7 @@ import Notice from "./components/Notice/Notice";
 import WritePost from "./components/Post/WritePost";
 import PostDetail from "./components/Post/PostDetail";
 import { PostProvider } from "./components/context/PostContext";
+import { AuthProvider, useAuth } from "./components/context/AuthContext";
 
 import Layout from "./components/Layout";
 import Login from "./components/Login/Login";

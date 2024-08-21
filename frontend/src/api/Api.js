@@ -66,3 +66,43 @@ export const incrementViews = async (id) => {
   const response = await axios.patch(`${API_URL}/${id}/views`);
   return response.data;
 };
+
+export const login = async (credentials) => {
+  try {
+    const response = await axios.post(`${API_URL}/user/login`, credentials, {
+      withCredentials: true, // 필요 시
+    });
+    const token = response.data.token;
+    if (token) {
+      localStorage.setItem("token", token); // 토큰 저장
+    }
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+const handleError = (error) => {
+  if (error.response) {
+    console.error("서버 응답 오류:", error.response.data);
+  } else if (error.request) {
+    console.error("네트워크 오류:", error.request);
+  } else {
+    console.error("로그인 처리 중 오류:", error.message);
+  }
+  throw error;
+};
+
+// 모든 API 요청 시 토큰을 헤더에 포함
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);

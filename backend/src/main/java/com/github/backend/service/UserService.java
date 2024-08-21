@@ -14,23 +14,26 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User registerUser(User user) throws Exception {
-
+    public String registerUser(User user){
         Optional<User> existingUser = userRepository.findByUserId(user.getUserId());
-        if (existingUser.isPresent()) {
-            throw new Exception(user.getUserId()+"가 이미 존재합니다. 다른 아이디로 변경해주세요.");
-        }
-        Optional<User> existingNickname = userRepository.findByNickname(user.getNickname());
-        if (existingNickname.isPresent()) {
-            throw new Exception(user.getNickname()+ "가 이미 존재합니다. 다른 닉네임으로 변경해주세요.");
+            if (existingUser.isPresent()) {
+                return MessageService.EXISTING_USERID.getMessage();
+            }
+            Optional<User> existingNickname = userRepository.findByNickname(user.getNickname());
+
+            if (existingNickname.isPresent()) {
+                return MessageService.EXISTING_NICKNAME.getMessage();
+            }
+
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encodedPassword);
+            userRepository.save(user);
+
+            return MessageService.SUCCEED_CREATE_ACCOUNT.getMessage();
         }
 
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
-
-        return userRepository.save(user);
     }
 
 
 
-}
+

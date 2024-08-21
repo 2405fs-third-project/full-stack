@@ -33,4 +33,18 @@ public class User {
 
     @Column(name = "nickname", nullable = false, unique = true, length = 50)
     private String nickname;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 10)
+    private Role role = Role.LEVEL1;
+
+    public enum Role {
+        ADMIN,
+        LEVEL5,
+        LEVEL4,
+        LEVEL3,
+        LEVEL2,
+        LEVEL1
+    }
+
 }
