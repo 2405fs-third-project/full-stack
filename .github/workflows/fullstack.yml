@@ -6,8 +6,8 @@ on:
       - main
 
 env:
-  DOCKER_IMAGE_BACKEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-backend
-  DOCKER_IMAGE_FRONTEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-frontend
+  DOCKER_IMAGE_BACKEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-backend:latest
+  DOCKER_IMAGE_FRONTEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-frontend:latest
   DOCKER_COMPOSE_LOCATION: /home/ubuntu/full-stack
 
 jobs:
