@@ -1,10 +1,6 @@
 import axios from "axios";
 
-<<<<<<< HEAD
-export const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
-=======
 const API_URL = "http://localhost:8080/api/posts";
->>>>>>> cfc77ea2f1c036c12594d69a0098b5f636704b80
 
 export const getPosts = async () => {
   const response = await axios.get(API_URL);
@@ -73,16 +69,12 @@ export const incrementViews = async (id) => {
 
 export const login = async (credentials) => {
   try {
-    const response = await axios.post(
-      `${apiUrl}/user/login`,
-      credentials,
-      {
-        withCredentials: true, // 필요 시
-      }
-    );
+    const response = await axios.post(`${API_URL}/user/login`, credentials, {
+      withCredentials: true, // 필요 시
+    });
     const token = response.data.token;
     if (token) {
-      localStorage.setItem('token', token); // 토큰 저장
+      localStorage.setItem("token", token); // 토큰 저장
     }
     return response.data;
   } catch (error) {
@@ -102,13 +94,15 @@ const handleError = (error) => {
 };
 
 // 모든 API 요청 시 토큰을 헤더에 포함
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
-
+);
