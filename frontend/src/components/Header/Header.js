@@ -27,6 +27,17 @@ const Header = () => {
     }
   };
 
+  const handleSearch = () => {
+    console.log("검색어", searchQuery);
+    setSearchQuery(""); // 검색 후 입력 값 초기화
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(e);
+    }
+  };
+
   return (
     <div className="nav_wrap">
       <div className="search">
