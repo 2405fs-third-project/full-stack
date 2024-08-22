@@ -54,7 +54,8 @@ public class PostService {
                 post.getPostContent(),
                 post.getViews(),
                 post.getLikes(),
-                post.getPostCreate()
+                post.getPostCreate(),
+                post.getUser().getNickname()
         ));
     }
 
@@ -75,7 +76,8 @@ public class PostService {
                 post.getPostContent(),
                 post.getViews(),
                 post.getLikes(),
-                post.getPostCreate()
+                post.getPostCreate(),
+                post.getUser().getNickname()
         ));
     }
 
@@ -99,7 +101,8 @@ public class PostService {
                 post.getPostContent(),
                 post.getViews(),
                 post.getLikes(),
-                post.getPostCreate()
+                post.getPostCreate(),
+                post.getUser().getNickname()
         ));
     }
 }
