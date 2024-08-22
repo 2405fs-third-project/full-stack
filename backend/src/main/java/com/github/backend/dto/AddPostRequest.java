@@ -16,5 +16,5 @@ public class AddPostRequest {
     private Integer views;
     private Integer likes;
     private LocalDateTime postCreate;
-
+    private String type;
 }

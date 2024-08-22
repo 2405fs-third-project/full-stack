@@ -18,5 +18,6 @@ public class PostResponse {
     private Integer likes;
     private LocalDateTime postCreate;
     private String nickname;
+    private String type;
 
 }

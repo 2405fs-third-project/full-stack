@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.get(`${apiUrl}/auth/verify`, {
         headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true, // 쿠키 포함을 위해 추가
       });
       if (response.data.success) {
         setUser(response.data.user);
