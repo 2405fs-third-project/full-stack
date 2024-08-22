@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthService from "../../service/AuthService";
-import "./SignUp2.css";
+import "./SignUp.css";
 
-const SignUp2 = () => {
+const SignUp = () => {
   useEffect(() => {
     const navWrap = document.querySelector(".nav_wrap");
     if (navWrap) {
@@ -19,10 +19,11 @@ const SignUp2 = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    phoneNum: "",
-    email: "",
+    phone: "",
+    userId: "",
     password: "",
     confirmPassword: "",
+    nickname: "",
   });
   const [errors, setErrors] = useState({
     passwordMismatch: false,
@@ -102,20 +103,20 @@ const SignUp2 = () => {
               <label>핸드폰번호</label>
               <input
                 type="text"
-                name="phoneNum"
-                value={formData.phoneNum}
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <label>아이디 (이메일)</label>
+              <label>아이디</label>
               <input
-                type="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                name="userId"
+                value={formData.userId}
                 onChange={handleChange}
-                placeholder="이메일을 입력해주세요."
+                placeholder="아이디를 입력해주세요."
                 required
               />
             </div>
@@ -142,6 +143,17 @@ const SignUp2 = () => {
                 <div className="error">비밀번호가 일치하지 않습니다</div>
               )}
             </div>
+            <div>
+              <label>닉네임</label>
+              <input
+                type="text"
+                name="nickname"
+                value={formData.nickname}
+                onChange={handleChange}
+                placeholder="닉네임을 입력해주세요."
+                required
+              />
+            </div>
             <button
               type="submit"
               className={isFormValid() ? "active" : ""}
@@ -159,4 +171,4 @@ const SignUp2 = () => {
   );
 };
 
-export default SignUp2;
+export default SignUp;

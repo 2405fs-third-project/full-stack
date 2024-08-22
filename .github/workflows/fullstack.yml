@@ -6,8 +6,8 @@ on:
       - main
 
 env:
-  DOCKER_IMAGE_BACKEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-backend
-  DOCKER_IMAGE_FRONTEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-frontend
+  DOCKER_IMAGE_BACKEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-backend:latest
+  DOCKER_IMAGE_FRONTEND: ${{ secrets.DOCKER_HUB_USER }}/filmfinder-app-frontend:latest
   DOCKER_COMPOSE_LOCATION: /home/ubuntu/full-stack
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
       - name: Build and Push Backend Docker image
         run: |
           cd backend
-          docker build -t ${{ env.DOCKER_IMAGE_BACKEND }} -f Dockerfile .
+          docker build --no-cache -t ${{ env.DOCKER_IMAGE_BACKEND }} -f Dockerfile .
           docker push ${{ env.DOCKER_IMAGE_BACKEND }}
 
       - name: Check build directory
@@ -52,7 +52,7 @@ jobs:
       - name: Build and Push Frontend Docker image
         run: |
           cd frontend
-          docker build -t ${{ env.DOCKER_IMAGE_FRONTEND }} -f Dockerfile .
+          docker build --no-cache -t ${{ env.DOCKER_IMAGE_FRONTEND }} -f Dockerfile .
           docker push ${{ env.DOCKER_IMAGE_FRONTEND }}
 
       - name: Check build directory
@@ -78,7 +78,7 @@ jobs:
             cd ${{ env.DOCKER_COMPOSE_LOCATION }}
 
             echo "Stopping and removing old containers..."
-            sudo docker-compose down
+            sudo docker-compose down --rmi all
 
             echo "Pulling Docker images..."
             sudo docker pull ${{ env.DOCKER_IMAGE_BACKEND }}

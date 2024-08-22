@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "./SignUp1.css";
+import "./TermsOfUse.css";
 
-const Signup = () => {
+const TermsOfUse = () => {
   useEffect(() => {
-    // 헤더를 숨깁니다.
     document.querySelector(".nav_wrap").style.display = "none";
 
     return () => {
-      // 컴포넌트가 언마운트될 때 헤더를 다시 보이도록 설정합니다.
       document.querySelector(".nav_wrap").style.display = "flex";
     };
   }, []);
@@ -42,12 +40,12 @@ const Signup = () => {
   return (
     <div className="signup_1">
       <div className="signup_box_1">
-        <h2>Movie Talk 통합회원 가입 안내</h2>
+        <h2>Film Finder 통합회원 가입 안내</h2>
         <div className="info_text">
-          <p>Movie Talk 통합회원 가입을 환영합니다.</p>
+          <p>Film Finder 통합회원 가입을 환영합니다.</p>
           <p>
-            웹사이트로 가입하시면 Movie Talk에서 운영하는 다양한 이벤트와 회원
-            간 소통을 이용하실 수 있습니다.
+            웹사이트로 가입하시면 Film Finder에서 회원 간 소통과 다양한 이벤트를
+            이용하실 수 있습니다.
           </p>
           <h3>영화관 사이트</h3>
           <p>CGV: www.cgv.co.kr</p>
@@ -55,7 +53,7 @@ const Signup = () => {
           <p>메가박스: www.megabox.co.kr</p>
         </div>
         <div className="terms">
-          <span className="font_bold">Movie Talk 통합회원 가입</span>
+          <span className="font_bold">Film Finder 통합회원 가입</span>
           <span>
             을 위해<br></br> 아래 약관에 동의해주세요.
           </span>
@@ -110,7 +108,7 @@ const Signup = () => {
               마케팅 정보 수신 동의<span> (선택)</span>
             </label>
           </div>
-          <Link to="/SignUp2">
+          <Link to="/signup">
             <button
               className={`signup_1_button ${isButtonActive ? "active" : ""}`}
               disabled={!isButtonActive}
@@ -124,4 +122,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default TermsOfUse;

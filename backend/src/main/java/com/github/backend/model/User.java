@@ -19,18 +19,32 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "phone", nullable = false, length = 50)
+    @Column(name = "phone")
     private String phone;
 
-    @Column(name = "userid", nullable = false, unique = true, length = 50)
+    @Column(name = "userid")
     private String userId;
 
-    @Column(name = "password", nullable = false, length = 50)
+    @Column(name = "password")
     private String password;
 
-    @Column(name = "nickname", nullable = false, unique = true, length = 50)
+    @Column(name = "nickname")
     private String nickname;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role = Role.LEVEL1;
+
+    public enum Role {
+        ADMIN,
+        LEVEL5,
+        LEVEL4,
+        LEVEL3,
+        LEVEL2,
+        LEVEL1
+    }
+
 }
