@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+export const apiUrl = process.env.REACT_APP_API_URL || 'http://13.125.98.63:8080/api';
 
-const API_URL = "http://localhost:8080/api/posts";
+const API_URL = "http://13.125.98.63:8080/api/posts";
 
 export const getPosts = async () => {
   const response = await axios.get(API_URL);
