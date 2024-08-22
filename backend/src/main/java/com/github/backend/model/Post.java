@@ -46,4 +46,7 @@ public class Post {
 
     @Column(name = "post_create")
     private LocalDateTime postCreate;
+
+    @Column(name = "type")
+    private String type;
 }
