@@ -1,25 +1,51 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getPosts } from "../../api/Api"; // 올바른 경로로 수정
+import { getPosts } from "../../api/Api";
 import "./Notice.css";
 
 const Notice = () => {
   const [posts, setPosts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 10;
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const data = await getPosts();
-        // 데이터가 배열인지 확인하고 배열이 아닌 경우 빈 배열로 초기화
         setPosts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching posts:", error);
-        setPosts([]); // 에러가 발생할 경우 빈 배열로 초기화
+        setPosts([]);
       }
     };
 
     fetchPosts();
   }, []);
+
+  // Reverse posts
+  const reversedPosts = posts.reverse();
+
+  // Pagination logic
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = reversedPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Format date based on whether it is today or not
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+
+    const isToday =
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear();
+
+    return isToday
+      ? date.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })
+      : date.toLocaleDateString("ko-KR");
+  };
 
   return (
     <div className="notice-container">
@@ -37,22 +63,36 @@ const Notice = () => {
               <th>추천</th>
             </tr>
           </thead>
-          <tbody>
-            {posts.map((post, index) => (
-              <tr key={post.id}>
-                <td>{index + 1}</td>
-                <td>{post.type}</td>
-                <td>
-                  <Link to={`/post/${post.id}`}>{post.title}</Link>
-                </td>
-                <td>{post.author}</td>
-                <td>{post.date}</td>
-                <td>{post.views}</td>
-                <td>{post.recommendations}</td>
-              </tr>
-            ))}
+          <tbody className="post-info">
+            {currentPosts.map((post, index) => {
+              const postNumber = posts.length - indexOfFirstPost - index; // Calculate post number
+
+              return (
+                <tr key={post.id}>
+                  <td>{postNumber}</td>
+                  <td>{post.type}</td>
+                  <td>
+                    <Link to={`/post/${post.id}`}>{post.postName}</Link>
+                  </td>
+                  <td>{post.nickname}</td>
+
+                  <td>{formatDate(post.postCreate)}</td>
+                  <td>{post.views}</td>
+                  <td>{post.likes}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        <div className="pagination">
+          {[...Array(Math.ceil(posts.length / postsPerPage)).keys()].map(
+            (number) => (
+              <button key={number + 1} onClick={() => paginate(number + 1)}>
+                {number + 1}
+              </button>
+            )
+          )}
+        </div>
         <div className="actions">
           <Link to="/writepost">
             <button className="write-button">글쓰기</button>

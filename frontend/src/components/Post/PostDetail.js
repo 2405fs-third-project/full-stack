@@ -147,7 +147,7 @@ const PostDetail = () => {
             )}
           </h2>
           <div className="post-meta">
-            <span>{post.author}</span> | <span>{post.post_create}</span> |{" "}
+            <span>{post.nickname}</span> | <span>{post.post_create}</span> |{" "}
             <span>조회 {post.views}</span> | <span>추천 {post.likes}</span>
           </div>
         </div>

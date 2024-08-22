@@ -8,7 +8,7 @@ const WritePost = () => {
   const [formData, setFormData] = useState({
     nickname: "",
     password: "",
-    title: "",
+    postName: "",
     content: "",
     tab: "잡담", // 탭 선택에 대한 초기값 설정
     image: null, // 이미지 파일 초기값 설정
@@ -28,14 +28,13 @@ const WritePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newPost = {
-      title: formData.title,
-      content: formData.content,
-      author: "익명",
-      type: formData.tab, // 선택된 탭을 반영
-      date: new Date().toISOString().split("T")[0],
+      postNumber: formData.postNumber,
+      postName: formData.postName,
+      postContent: formData.content,
       views: 0,
-      recommendations: 0,
-      image: formData.image, // 이미지 파일 추가
+      likes: 0,
+      userId: formData.userId,
+      postCreate: new Date().toISOString(),
     };
 
     try {
