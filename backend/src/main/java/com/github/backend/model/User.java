@@ -1,5 +1,6 @@
 package com.github.backend.model;
 
+import com.github.backend.service.UserService;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,15 +37,11 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private Role role = Role.LEVEL1;
+    private UserService.Role role = UserService.Role.LEVEL1;
 
-    public enum Role {
-        ADMIN,
-        LEVEL5,
-        LEVEL4,
-        LEVEL3,
-        LEVEL2,
-        LEVEL1
-    }
+    @Column(name = "point")
+    private Integer point = 0;
+
+
 
 }
