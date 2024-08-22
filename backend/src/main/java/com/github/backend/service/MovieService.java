@@ -165,9 +165,10 @@ public class MovieService {
     }
 
     private boolean filterByLanguage(Movie movie, String language) {
-        String movieState = movie.getMovieState();
-        return language == null || (movieState != null && language.equalsIgnoreCase(movieState.trim()));
+        String movieLanguage = movie.getLanguage(); // movie.getLanguage()를 사용
+        return language == null || (movieLanguage != null && language.equalsIgnoreCase(movieLanguage.trim()));
     }
+
 
     private MovieResponse convertToMovieResponse(Movie movie) {
         return MovieResponse.builder()
