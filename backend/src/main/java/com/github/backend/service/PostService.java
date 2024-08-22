@@ -35,6 +35,7 @@ public class PostService {
         post.setPostContent(addPostRequest.getPostContent());
         post.setViews(addPostRequest.getViews());
         post.setLikes(addPostRequest.getLikes());
+        post.setType(addPostRequest.getType());
         post.setPostCreate(LocalDateTime.now());
         return postRepository.save(post);
     }
@@ -54,7 +55,9 @@ public class PostService {
                 post.getPostContent(),
                 post.getViews(),
                 post.getLikes(),
-                post.getPostCreate()
+                post.getPostCreate(),
+                post.getUser().getNickname(),
+                post.getType()
         ));
     }
 
@@ -75,7 +78,9 @@ public class PostService {
                 post.getPostContent(),
                 post.getViews(),
                 post.getLikes(),
-                post.getPostCreate()
+                post.getPostCreate(),
+                post.getUser().getNickname(),
+                post.getType()
         ));
     }
 
@@ -99,7 +104,9 @@ public class PostService {
                 post.getPostContent(),
                 post.getViews(),
                 post.getLikes(),
-                post.getPostCreate()
+                post.getPostCreate(),
+                post.getUser().getNickname(),
+                post.getType()
         ));
     }
 }

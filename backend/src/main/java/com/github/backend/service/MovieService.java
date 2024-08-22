@@ -1,6 +1,7 @@
 package com.github.backend.service;
 
 import com.github.backend.dto.AddMovieRequest;
+import com.github.backend.dto.MovieRecommendationRequest;
 import com.github.backend.dto.MovieResponse;
 import com.github.backend.model.Movie;
 import com.github.backend.repository.MovieRepository;
@@ -14,6 +15,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.Locale.filter;
 
 @RequiredArgsConstructor
 @Service
@@ -51,7 +61,8 @@ public class MovieService {
                 movie.getComGrade(),
                 movie.getMovieTime(),
                 movie.getRelease(),
-                movie.getMovieState()
+                movie.getMovieState(),
+                movie.getLanguage()
         );
     }
 
@@ -93,13 +104,90 @@ public class MovieService {
         }
 
         try {
-            // 이미지 파일을 resources/static/img 디렉토리로 복사
-            File destinationFile = new File("src/main/resources/static/img" + File.separator + imageName);
-            Files.copy(imageFile.toPath(), destinationFile.toPath());
-            return imageName;
+            // 이미지 파일을 src/main/resources/static/img 디렉토리로 복사
+            File destinationFile=new File("src/main/resources/static/img/" + imageName);
+            Files.copy(imageFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            return"/img/" + imageName;  // 웹에서 접근할 경로
         } catch (IOException e) {
             throw new RuntimeException("Failed to save image file: " + imageName, e);
         }
+    }
+
+    @Transactional //영화 추천 기능
+    public List<MovieResponse> recommendMovies(MovieRecommendationRequest request) {
+        Date releasePreference = request.getRelease();
+
+        return movieRepository.findAll().stream()
+                .filter(movie -> filterByGenre(movie, request.getMovieGenre()))
+                .filter(movie -> filterByRuntime(movie, request.getMovieTime()))
+                .filter(movie -> filterByReleaseType(movie, request.getReleaseType(), releasePreference))
+                .filter(movie -> filterByLanguage(movie, request.getLanguage()))
+                .map(this::convertToMovieResponse)
+                .collect(Collectors.toList());
+    }
+
+    private boolean filterByReleaseType(Movie movie, String releaseType, Date releasePreference) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2024, Calendar.JANUARY, 1, 0, 0, 0);
+        Date cutoffDate = calendar.getTime();
+
+        Date releaseDate = movie.getRelease();
+
+        if (releaseType == null || releaseDate == null) {
+            return true;
+        }
+
+        if ("최근 개봉 영화".equalsIgnoreCase(releaseType)) {
+            return releaseDate.after(cutoffDate);
+        } else if ("클래식 영화".equalsIgnoreCase(releaseType)) {
+            return releaseDate.before(cutoffDate);
+        }
+        return false;
+    }
+
+    private boolean filterByGenre(Movie movie, String genre) {
+        return genre == null || genre.equalsIgnoreCase(movie.getMovieGenre());
+    }
+
+    private boolean filterByRuntime(Movie movie, String runtime) {
+        if (runtime == null) return true;
+        int movieTime = movie.getMovieTime();
+        switch (runtime) {
+            case "100~150분":
+                return movieTime >= 100 && movieTime <= 150;
+            case "150~200분":
+                return movieTime > 150 && movieTime <= 200;
+            case "200분 이상":
+                return movieTime > 200;
+            default:
+                return false;
+        }
+    }
+
+    private boolean filterByLanguage(Movie movie, String language) {
+        String movieLanguage = movie.getLanguage(); // movie.getLanguage()를 사용
+        return language == null || (movieLanguage != null && language.equalsIgnoreCase(movieLanguage.trim()));
+    }
+
+
+    private MovieResponse convertToMovieResponse(Movie movie) {
+        return MovieResponse.builder()
+                .id(movie.getId())
+                .movieName(movie.getMovieName())
+                .movieGenre(movie.getMovieGenre())
+                .moviePoster("/img/" + movie.getMoviePoster())  // 이미지 경로 설정
+                .movieDirector(movie.getMovieDirector())
+                .recommend(movie.getRecommend())
+                .movieActor(movie.getMovieActor())
+                .movieGrade(movie.getMovieGrade())
+                .movieRanking(movie.getMovieRanking())
+                .attendance(movie.getAttendance())
+                .comGrade(movie.getComGrade())
+                .movieTime(movie.getMovieTime())
+                .release(movie.getRelease())
+                .movieState(movie.getMovieState())
+                .language(movie.getLanguage())
+                .build();
     }
 
 }

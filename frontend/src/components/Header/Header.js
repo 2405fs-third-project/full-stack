@@ -1,23 +1,36 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Header.css";
-import { Navigate, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { IoPersonCircleOutline } from "react-icons/io5";
+import { apiUrl } from "../../api/Api";
 
 const Header = () => {
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]); // 검색 결과 상태 추가
 
   const handleLoginClick = () => {
-    Navigate("/login");
+    navigate("/login");
   };
 
-  const handleLoginClick2 = () => {
-    Navigate("/TermsOfUse");
+  const handleSignupClick = () => {
+    navigate("/TermsOfUse");
   };
 
-  const handleSearch = () => {
-    console.log("검색어", searchQuery);
+  const handleSearch = async () => {
+    if (!searchQuery) return;
+
+    try {
+      const response = await axios.get(`${apiUrl}/movies/search`, {
+        params: { searchQuery },
+      });
+      setSearchResults(response.data); // 검색 결과 상태 업데이트
+      console.log("검색 결과:", response.data);
+    } catch (error) {
+      console.error("검색 중 오류 발생", error);
+    }
     setSearchQuery(""); // 검색 후 입력 값 초기화
   };
 
@@ -53,10 +66,20 @@ const Header = () => {
         <div className="login" onClick={handleLoginClick}>
           로그인
         </div>
-        <div className="signup" onClick={handleLoginClick2}>
+        <div className="signup" onClick={handleSignupClick}>
           회원가입
         </div>
       </div>
+
+      {searchResults.length > 0 && (
+        <div className="search_results">
+          {searchResults.map((result) => (
+            <div key={result.id} className="search_result_item">
+              {result.title}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

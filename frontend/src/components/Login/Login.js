@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Login.css";
 import axios from "axios";
+import { default as React, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../../api/Api";
 import { useAuth } from "../context/AuthContext";
-
-const API_URL = "http://localhost:8080/api/";
+import "./Login.css";
 
 const Login = () => {
-  const navigate = useNavigate(); // useNavigate 훅을 올바르게 사용
+  const navigate = useNavigate();
   const { login, user } = useAuth();
 
   const [idTouched, setIdTouched] = useState(false);
@@ -19,7 +18,6 @@ const Login = () => {
   const [userIdValid, setUserIdValid] = useState(false);
   const [pwValid, setPwValid] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
-
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleUserId = (e) => {
@@ -51,7 +49,7 @@ const Login = () => {
   }, [user, navigate]);
 
   const handleLogin = async () => {
-    console.log("API URL:", API_URL);
+    console.log("API URL:", apiUrl);
 
     setSubmitAttempted(true);
     setIdTouched(true);
@@ -62,34 +60,28 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${API_URL}/user/login`,
-        {
-          userId: userId,
-          password: pw,
-        },
-        {
-          withCredentials: true, // CSRF 보호를 위해 쿠키 포함
-        }
-      );
+      const response = await axios.post(`${apiUrl}/user/login`, {
+        userId: userId,
+        password: pw,
+      });
 
-      if (response.data.success) {
+      if (response.status === 200 || response.status === 201) {
+        alert(response.data);
         // 로그인 성공 처리
         console.log("로그인 성공:", response.data);
-        login(response.data.user, response.data.token); // 사용자 정보와 토큰을 AuthContext에 저장
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${response.data.token}`; // axios 기본 헤더에 토큰 설정
+        login(response.data.user, (response.headers["authorization"] || "").split(" ")[1]); // 사용자 정보와 토큰을 AuthContext에 저장
+        axios.defaults.headers.common["Authorization"] = `Bearer ${
+          (response.headers["authorization"] || "").split(" ")[1]
+        }`; // axios 기본 헤더에 토큰 설정
 
         navigate("/");
       } else {
+        alert(response.data);
         setErrorMessage(response.data.message || "로그인에 실패했습니다.");
       }
     } catch (error) {
       console.error("로그인 오류:", error);
-      setErrorMessage(
-        error.response?.data?.message || "로그인 중 오류가 발생했습니다."
-      );
+      setErrorMessage(error.response?.data?.message || "로그인 중 오류가 발생했습니다.");
     }
   };
 
@@ -106,35 +98,27 @@ const Login = () => {
             <div className="id_box">아이디</div>
             <input
               type="text"
-              className={`input ${
-                (idTouched || submitAttempted) && !userIdValid ? "error" : ""
-              }`}
+              className={`input ${(idTouched || submitAttempted) && !userIdValid ? "error" : ""}`}
               placeholder="아이디를 입력해주세요."
               value={userId}
               onChange={handleUserId}
             />
           </div>
           <div className="error_message">
-            {(idTouched || submitAttempted) && !userIdValid && (
-              <div>아이디를 입력해주세요.</div>
-            )}
+            {(idTouched || submitAttempted) && !userIdValid && <div>아이디를 입력해주세요.</div>}
           </div>
 
           <div className="pw_box">비밀번호</div>
           <input
             type="password"
-            className={`input ${
-              (pwTouched || submitAttempted) && !pwValid ? "error" : ""
-            }`}
+            className={`input ${(pwTouched || submitAttempted) && !pwValid ? "error" : ""}`}
             placeholder="비밀번호를 입력해주세요."
             value={pw}
             onChange={handlePassword}
           />
         </div>
         <div className="error_message">
-          {(pwTouched || submitAttempted) && !pwValid && (
-            <div>비밀번호를 입력해주세요.</div>
-          )}
+          {(pwTouched || submitAttempted) && !pwValid && <div>비밀번호를 입력해주세요.</div>}
 
           {errorMessage && (
             <div className="error_message">

@@ -1,5 +1,7 @@
 import axios from "axios";
 
+export const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+
 const API_URL = "http://localhost:8080/api/posts";
 
 export const getPosts = async () => {
@@ -69,9 +71,7 @@ export const incrementViews = async (id) => {
 
 export const login = async (credentials) => {
   try {
-    const response = await axios.post(`${API_URL}/user/login`, credentials, {
-      withCredentials: true, // 필요 시
-    });
+    const response = await axios.post(`${apiUrl}/user/login`, credentials);
     const token = response.data.token;
     if (token) {
       localStorage.setItem("token", token); // 토큰 저장
@@ -106,3 +106,5 @@ axios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+
