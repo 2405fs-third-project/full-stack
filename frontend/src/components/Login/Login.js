@@ -1,13 +1,12 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { default as React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../../api/Api";
 import { useAuth } from "../context/AuthContext";
 import "./Login.css";
 
-const API_URL = "http://localhost:8080/api/";
-
 const Login = () => {
-  const navigate = useNavigate(); // useNavigate 훅을 올바르게 사용
+  const navigate = useNavigate(); 
   const { login, user } = useAuth();
 
   const [idTouched, setIdTouched] = useState(false);
@@ -19,7 +18,6 @@ const Login = () => {
   const [userIdValid, setUserIdValid] = useState(false);
   const [pwValid, setPwValid] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
-
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleUserId = (e) => {
@@ -51,8 +49,6 @@ const Login = () => {
   }, [user, navigate]);
 
   const handleLogin = async () => {
-    console.log("API URL:", API_URL);
-
     setSubmitAttempted(true);
     setIdTouched(true);
     setPwTouched(true);
@@ -62,32 +58,50 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${API_URL}user/login`,
-        {
-          userId: userId,
-          password: pw,
-        },
-        {
-          withCredentials: true, // CSRF 보호를 위해 쿠키 포함
+      const response = await axios.post(`${apiUrl}/user/login`, {
+        userId: userId,
+        password: pw,
+      });
+
+        // 서버 응답 헤더를 콘솔에 출력
+        console.log("서버 응답 헤더:", response.headers);
+
+        // Authorization 헤더 값 확인 및 출력
+        const authorizationHeader = response.headers['authorization'];
+        if (authorizationHeader) {
+            console.log("Authorization 헤더:", authorizationHeader);
+
+            // 토큰만 추출해서 변수에 저장
+            const token = authorizationHeader.split(' ')[1];
+            console.log("추출된 토큰:", token);
+
+            if (token) {
+                // 로그인 성공 처리
+                console.log("로그인 성공:", response.data);
+
+                // 사용자 정보와 토큰을 AuthContext에 저장
+                login(response.data.user, token);
+
+                // axios 기본 헤더에 토큰 설정
+                axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+                // 페이지 이동
+                navigate("/");
+            } else {
+                console.error("토큰 추출 실패");
+                setErrorMessage("로그인에 실패했습니다.");
+            }
+        } else {
+            console.error("Authorization 헤더가 존재하지 않습니다.");
+            setErrorMessage("로그인에 실패했습니다.");
         }
-      );
-
-      if (response.data.success) {
-        // 로그인 성공 처리
-        console.log("로그인 성공:", response.data);
-        login(response.data.user, response.data.token); // 사용자 정보와 토큰을 AuthContext에 저장
-        axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`; // axios 기본 헤더에 토큰 설정
-
-        navigate("/");
-      } else {
-        setErrorMessage(response.data.message || "로그인에 실패했습니다.");
-      }
     } catch (error) {
-      console.error("로그인 오류:", error);
-      setErrorMessage(error.response?.data?.message || "로그인 중 오류가 발생했습니다.");
+        console.error("로그인 오류:", error);
+        setErrorMessage(
+            error.response?.data?.message || "로그인 중 오류가 발생했습니다."
+        );
     }
-  };
+};
 
   const handleSignupClick = () => {
     navigate("/TermsOfUse"); // useNavigate 훅을 사용하여 페이지 이동
@@ -102,27 +116,35 @@ const Login = () => {
             <div className="id_box">아이디</div>
             <input
               type="text"
-              className={`input ${(idTouched || submitAttempted) && !userIdValid ? "error" : ""}`}
+              className={`input ${
+                (idTouched || submitAttempted) && !userIdValid ? "error" : ""
+              }`}
               placeholder="아이디를 입력해주세요."
               value={userId}
               onChange={handleUserId}
             />
           </div>
           <div className="error_message">
-            {(idTouched || submitAttempted) && !userIdValid && <div>아이디를 입력해주세요.</div>}
+            {(idTouched || submitAttempted) && !userIdValid && (
+              <div>아이디를 입력해주세요.</div>
+            )}
           </div>
 
           <div className="pw_box">비밀번호</div>
           <input
             type="password"
-            className={`input ${(pwTouched || submitAttempted) && !pwValid ? "error" : ""}`}
+            className={`input ${
+              (pwTouched || submitAttempted) && !pwValid ? "error" : ""
+            }`}
             placeholder="비밀번호를 입력해주세요."
             value={pw}
             onChange={handlePassword}
           />
         </div>
         <div className="error_message">
-          {(pwTouched || submitAttempted) && !pwValid && <div>비밀번호를 입력해주세요.</div>}
+          {(pwTouched || submitAttempted) && !pwValid && (
+            <div>비밀번호를 입력해주세요.</div>
+          )}
 
           {errorMessage && (
             <div className="error_message">
@@ -146,3 +168,9 @@ const Login = () => {
 };
 
 export default Login;
+
+
+
+
+
+
