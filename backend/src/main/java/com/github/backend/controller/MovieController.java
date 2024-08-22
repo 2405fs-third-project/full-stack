@@ -31,4 +31,6 @@ public class MovieController {
         MovieResponse movieResponse = movieService.getMovieById(movie.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(movieResponse);
     }
+
+
 }
