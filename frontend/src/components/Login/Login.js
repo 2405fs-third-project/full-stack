@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Login.css";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext";
+import { default as React, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../../api/Api";
+import { useAuth } from "../context/AuthContext";
+import "./Login.css";
 
 const Login = () => {
-  const navigate = useNavigate(); // useNavigate 훅을 올바르게 사용
+  const navigate = useNavigate(); 
   const { login, user } = useAuth();
 
   const [idTouched, setIdTouched] = useState(false);
@@ -18,7 +18,6 @@ const Login = () => {
   const [userIdValid, setUserIdValid] = useState(false);
   const [pwValid, setPwValid] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
-
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleUserId = (e) => {
@@ -50,8 +49,6 @@ const Login = () => {
   }, [user, navigate]);
 
   const handleLogin = async () => {
-    console.log('API URL:', apiUrl);
-
     setSubmitAttempted(true);
     setIdTouched(true);
     setPwTouched(true);
@@ -61,26 +58,26 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${apiUrl}/user/login`,
-        {
-          userId: userId,
-          password: pw,
-        },
-        {
-          withCredentials: true, // CSRF 보호를 위해 쿠키 포함
-        }
-      );
+      const response = await axios.post(`${apiUrl}/user/login`, {
+        userId: userId,
+        password: pw,
+      });
 
-      if (response.data.success) {
-        // 로그인 성공 처리
-        console.log("로그인 성공:", response.data);
-        login(response.data.user, response.data.token); // 사용자 정보와 토큰을 AuthContext에 저장
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${response.data.token}`; // axios 기본 헤더에 토큰 설정
 
-        navigate("/");
+      // 로그인 성공 여부를 토큰의 존재로 판단
+    const token = response.headers['authorization']?.split(' ')[1];
+    if (token) {
+      // 로그인 성공 처리
+      console.log("로그인 성공:", response.data);
+
+      // 사용자 정보와 토큰을 AuthContext에 저장
+      login(response.data.user, token);
+
+      // axios 기본 헤더에 토큰 설정
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      // 페이지 이동
+      navigate("/");
       } else {
         setErrorMessage(response.data.message || "로그인에 실패했습니다.");
       }
@@ -93,7 +90,7 @@ const Login = () => {
   };
 
   const handleSignupClick = () => {
-    navigate("/signup"); // useNavigate 훅을 사용하여 페이지 이동
+    navigate("/TermsOfUse"); // useNavigate 훅을 사용하여 페이지 이동
   };
 
   return (

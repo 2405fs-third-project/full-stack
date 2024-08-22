@@ -1,9 +1,8 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8081/api/auth";
+const API_URL = "http://localhost:8080/api/user";
 
 class AuthService {
-  // 회원가입
   async registerUser(userData) {
     try {
       const response = await axios.post(`${API_URL}/register`, userData);
@@ -13,7 +12,6 @@ class AuthService {
     }
   }
 
-  // 토큰 검증
   async validateToken(token) {
     try {
       const response = await axios.post(
@@ -35,8 +33,9 @@ class AuthService {
   async loginUser(credentials) {
     try {
       const response = await axios.post(`${API_URL}/login`, credentials);
-      if (response.data.token) {
-        localStorage.setItem("user", JSON.stringify(response.data));
+      if (response.headers.authorization) {  // 토큰을 헤더에서 가져옴
+        localStorage.setItem("user", JSON.stringify(response.data)); // 사용자 정보 저장
+        localStorage.setItem("token", response.headers.authorization.split(' ')[1]); // 토큰 저장
       }
       return response.data;
     } catch (error) {
@@ -47,7 +46,9 @@ class AuthService {
   // 로그아웃
   logoutUser() {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");  // 토큰 삭제
   }
 }
 
-export default new AuthService();
+const authServiceInstance = new AuthService();
+export default authServiceInstance;

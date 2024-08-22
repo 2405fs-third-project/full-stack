@@ -2,106 +2,79 @@ import axios from "axios";
 
 export const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
+const API_URL = "http://localhost:8080/api/posts";
+
 export const getPosts = async () => {
-  try {
-    const response = await axios.get(`${apiUrl}/posts`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    throw error;
-  }
+  const response = await axios.get(API_URL);
+  return response.data;
 };
 
 export const getPost = async (id) => {
-  try {
-    const response = await axios.get(`${apiUrl}/posts/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching post:", error);
-    throw error;
-  }
+  const response = await axios.get(`${API_URL}/${id}`);
+  return response.data;
 };
 
 export const createPost = async (postData) => {
-  try {
-    const formData = new FormData();
-    for (const key in postData) {
-      formData.append(key, postData[key]);
-    }
-
-    const response = await axios.post(`${apiUrl}/posts`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error creating post:", error);
-    throw error;
-  }
+  const response = await axios.post(API_URL, postData);
+  return response.data;
 };
 
-export const updateRecommendation = async (id) => {
-  try {
-    const response = await axios.post(`${apiUrl}/posts/${id}/recommend`);
-    return response.data;
-  } catch (error) {
-    console.error("Error updating recommendation:", error);
-    throw error;
-  }
-};
-
-export const decreaseRecommendation = async (id) => {
-  try {
-    const response = await axios.post(`${apiUrl}/posts/${id}/derecommend`);
-    return response.data;
-  } catch (error) {
-    console.error("Error decreasing recommendation:", error);
-    throw error;
-  }
+export const updatePost = async (updatedPost) => {
+  const response = await axios.put(
+    `${API_URL}/modify/${updatedPost.id}`,
+    updatedPost
+  );
+  return response.data;
 };
 
 export const deletePost = async (id) => {
-  try {
-    await axios.delete(`${apiUrl}/posts/${id}`);
-  } catch (error) {
-    console.error("Error deleting post:", error);
-    throw error;
-  }
+  await axios.delete(`${API_URL}/delete/${id}`);
 };
 
-export const editPost = async (post) => {
-  try {
-    const response = await axios.put(`${apiUrl}/posts/${post.id}`, post);
-    return response.data;
-  } catch (error) {
-    console.error("Error editing post:", error);
-    throw error;
-  }
+export const updateRecommendation = async (id) => {
+  const response = await axios.post(`${API_URL}/${id}/like`);
+  return response.data;
+};
+
+export const decreaseRecommendation = async (id) => {
+  const response = await axios.post(`${API_URL}/${id}/dislike`);
+  return response.data;
+};
+
+export const addComment = async (postId, userId, comment) => {
+  const response = await axios.post(`${API_URL}/${postId}/comments`, {
+    user_id: userId,
+    reply_content: comment,
+    reply_create: new Date().toISOString(),
+  });
+  return response.data;
+};
+
+export const updateComment = async (postId, commentId, newComment) => {
+  const response = await axios.put(
+    `${API_URL}/${postId}/comments/${commentId}`,
+    {
+      reply_content: newComment,
+    }
+  );
+  return response.data;
+};
+
+export const deleteComment = async (postId, commentId) => {
+  await axios.delete(`${API_URL}/${postId}/comments/${commentId}`);
 };
 
 export const incrementViews = async (id) => {
-  try {
-    const response = await axios.post(`${apiUrl}/posts/${id}/view`);
-    return response.data;
-  } catch (error) {
-    console.error("Error incrementing views:", error);
-    throw error;
-  }
+  const response = await axios.patch(`${API_URL}/${id}/views`);
+  return response.data;
 };
 
 export const login = async (credentials) => {
   try {
-    const response = await axios.post(
-      `${apiUrl}/user/login`,
-      credentials,
-      {
-        withCredentials: true, // 필요 시
-      }
-    );
+    const response = await axios.post(`${apiUrl}/user/login`, credentials);
     const token = response.data.token;
     if (token) {
-      localStorage.setItem('token', token); // 토큰 저장
+      localStorage.setItem("token", token); // 토큰 저장
     }
     return response.data;
   } catch (error) {
@@ -121,13 +94,17 @@ const handleError = (error) => {
 };
 
 // 모든 API 요청 시 토큰을 헤더에 포함
-axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+);
+
 
