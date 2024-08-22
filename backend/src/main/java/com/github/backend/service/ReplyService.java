@@ -69,7 +69,8 @@ public class ReplyService {
                 reply.getPost().getId(),
                 reply.getUser().getId(),
                 reply.getReplyContent(),
-                reply.getReplyCreate()
+                reply.getReplyCreate(),
+                reply.getUser().getNickname()
         );
     }
 }

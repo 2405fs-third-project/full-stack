@@ -1,6 +1,7 @@
 package com.github.backend.controller;
 
 import com.github.backend.dto.AddMovieRequest;
+import com.github.backend.dto.MovieRecommendationRequest;
 import com.github.backend.dto.MovieResponse;
 import com.github.backend.model.Movie;
 import com.github.backend.service.MovieService;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,5 +35,9 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.CREATED).body(movieResponse);
     }
 
-
+    @PostMapping("/recommend") //영화 추천
+    public ResponseEntity<List<MovieResponse>> recommendMovies(@Valid@RequestBody MovieRecommendationRequest request) {
+        List<MovieResponse> recommendedMovies = movieService.recommendMovies(request);
+        return ResponseEntity.ok(recommendedMovies);
+    }
 }

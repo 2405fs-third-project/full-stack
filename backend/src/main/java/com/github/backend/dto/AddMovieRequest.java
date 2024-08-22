@@ -3,7 +3,7 @@ package com.github.backend.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @AllArgsConstructor
 @Data
@@ -20,6 +20,6 @@ public class AddMovieRequest {
     private Integer attendance;
     private String comGrade;
     private Integer movieTime;
-    private LocalDateTime release;
+    private Date release;
     private String movieState;
 }

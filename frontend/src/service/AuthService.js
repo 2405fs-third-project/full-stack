@@ -29,8 +29,8 @@ class AuthService {
     }
   }
 
-  // 로그인
-  async loginUser(credentials) {
+   // 로그인
+   async loginUser(credentials) {
     try {
       const response = await axios.post(`${API_URL}/login`, credentials);
       if (response.headers.authorization) {  // 토큰을 헤더에서 가져옴

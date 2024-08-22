@@ -15,4 +15,6 @@ public class ReplyResponse {
     private Integer userId;
     private String replyContent;
     private LocalDateTime replyCreate;
+    private String nickname;
+
 }

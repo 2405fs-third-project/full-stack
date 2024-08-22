@@ -1,14 +1,14 @@
 package com.github.backend.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@Builder
 public class MovieResponse {
     private Integer id;
     private String movieName;
@@ -22,6 +22,7 @@ public class MovieResponse {
     private Integer attendance;
     private String comGrade;
     private Integer movieTime;
-    private LocalDateTime release;
+    private Date release;
     private String movieState;
+    private String language;
 }

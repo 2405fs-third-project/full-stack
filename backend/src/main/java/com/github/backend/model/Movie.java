@@ -3,7 +3,7 @@ package com.github.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Builder
 @Getter
@@ -56,8 +56,11 @@ public class Movie {
     private Integer movieTime;
 
     @Column(name = "release")
-    private LocalDateTime release;
+    private Date release;
 
     @Column(name = "movie_state", length = 50)
     private String movieState;
+
+    @Column(name = "language", length = 50)
+    private String language;
 }
