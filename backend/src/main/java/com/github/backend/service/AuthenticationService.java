@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JWTService jwtService;
+    private final TokenService tokenService;
 
     public String authenticate(String userid, String password){
 
@@ -23,8 +23,7 @@ public class AuthenticationService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             return MessageService.INVALID_PASSWORD.getMessage();
         }
-
-        return jwtService.generateToken(userid);
+        return tokenService.generateToken(user.getUserId(), user.getRole().name());
 
     }
 
