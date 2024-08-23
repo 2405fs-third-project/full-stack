@@ -22,6 +22,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
 
     @Transactional //게시글 작성
@@ -33,8 +34,10 @@ public class PostService {
         User user = userRepository.findById(addPostRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setPoint(user.getPoint() + 10);
-        userRepository.save(user); // 업데이트된 포인트 정보 저장
+        Integer postpt = user.getPoint() + 10;
+        String userId = user.getUserId();
+        userService.updateUserRole(postpt,userId);
+
 
         Post post = new Post();
         post.setBoard(board); // 동적으로 조회한 게시판을 설정
@@ -105,9 +108,13 @@ public class PostService {
 
         // 포인트 10점 감점 (포인트가 0보다 작아지지 않도록 조건 처리)
         if (user.getPoint() >= 10) {
-            user.setPoint(user.getPoint() - 10);
+            Integer postpt = user.getPoint() - 10;
+            String userId = user.getUserId();
+            userService.updateUserRole(postpt,userId);
         } else {
-            user.setPoint(0); // 포인트가 0보다 작아질 경우 0으로 설정
+            user.setPoint(0);
+            String userId = user.getUserId();
+            userService.updateUserRole(0,userId); // 포인트가 0보다 작아질 경우 0으로 설정
         }
 
         userRepository.save(user); // 업데이트된 포인트 정보 저장
