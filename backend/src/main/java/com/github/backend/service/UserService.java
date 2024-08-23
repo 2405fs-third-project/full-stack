@@ -32,17 +32,17 @@ public class UserService {
             return MessageService.SUCCEED_CREATE_ACCOUNT.getMessage();
         }
 
-    public void updateUserRole(Integer point,String userId){
+    public void updateUserRole(Integer point, String userId){
         User user= userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException(MessageService.USER_NOT_FOUND.getMessage()));
         Role role;
-        if (point >= 500) {
+        if (point >= 300) {
             role = Role.LEVEL5;
-        } else if (point >= 400) {
+        } else if (point >= 150) {
             role = Role.LEVEL4;
-        } else if (point >= 300) {
+        } else if (point >= 70) {
             role = Role.LEVEL3;
-        } else if (point >= 200) {
+        } else if (point >= 30) {
             role = Role.LEVEL2;
         } else  {
             role = Role.LEVEL1;
@@ -51,6 +51,7 @@ public class UserService {
         user.setPoint(point);
         userRepository.save(user);
     }
+
     public enum Role {
         ADMIN,
         LEVEL5,
@@ -59,6 +60,7 @@ public class UserService {
         LEVEL2,
         LEVEL1
     }
+
 }
 
 
