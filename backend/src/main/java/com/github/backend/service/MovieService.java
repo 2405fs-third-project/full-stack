@@ -4,7 +4,10 @@ import com.github.backend.dto.AddMovieRequest;
 import com.github.backend.dto.MovieRecommendationRequest;
 import com.github.backend.dto.MovieResponse;
 import com.github.backend.model.Movie;
+import com.github.backend.model.QMovie;
 import com.github.backend.repository.MovieRepository;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,7 +30,7 @@ import static java.util.Locale.filter;
 public class MovieService {
 
     private final MovieRepository movieRepository;
-
+    private final JPAQueryFactory jpaQueryFactory;
     @Value("${image.upload.path}")
     private String imagePath;
 
@@ -186,5 +189,20 @@ public class MovieService {
                 .language(movie.getLanguage())
                 .build();
     }
+    public List<Movie> searchMovies(String searchQuery) {
+        return jpaQueryFactory
+                .selectFrom(QMovie.movie)
+                .where(createSearchPredicate(searchQuery))
+                .fetch();
+    }
 
+    private BooleanExpression createSearchPredicate(String searchQuery) {
+        if (searchQuery == null || searchQuery.isEmpty()) {
+            return null; // If searchQuery is null or empty, return no results
+        }
+        return QMovie.movie.movieName.containsIgnoreCase(searchQuery)
+                .or(QMovie.movie.movieGenre.containsIgnoreCase(searchQuery))
+                .or(QMovie.movie.movieDirector.containsIgnoreCase(searchQuery))
+                .or(QMovie.movie.movieActor.containsIgnoreCase(searchQuery));
+    }
 }
