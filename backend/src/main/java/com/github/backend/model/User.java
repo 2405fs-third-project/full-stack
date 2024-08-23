@@ -47,4 +47,7 @@ public class User {
         LEVEL1
     }
 
+    @Column(name = "point")
+    private Integer point;
+
 }

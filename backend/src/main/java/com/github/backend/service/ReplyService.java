@@ -31,6 +31,10 @@ public class ReplyService {
         User user = userRepository.findById(addReplyRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        user.setPoint(user.getPoint() + 5);
+        userRepository.save(user); // 업데이트된 포인트 정보 저장
+
+
         Reply reply = Reply.builder()
                 .post(post)
                 .user(user)
@@ -55,6 +59,17 @@ public class ReplyService {
     public void deleteReply(Integer replyId) {
         Reply reply = replyRepository.findById(replyId)
                 .orElseThrow(() -> new RuntimeException("Reply not found"));
+
+        // 사용자 조회
+        User user = reply.getUser();
+
+        if (user.getPoint() >= 5) {
+            user.setPoint(user.getPoint() - 5);
+        } else {
+            user.setPoint(0);
+        }
+
+        userRepository.save(user);
 
         replyRepository.delete(reply);
     }
