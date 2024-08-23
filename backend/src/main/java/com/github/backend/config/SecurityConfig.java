@@ -21,14 +21,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(request -> {
-                    CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowedOrigins(Arrays.asList("http://13.125.98.63:3000"));
-                    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    configuration.setAllowedHeaders(Arrays.asList("*"));
-                    configuration.setAllowCredentials(true);
-                    return configuration;
-                }))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/**").permitAll()
                 );
