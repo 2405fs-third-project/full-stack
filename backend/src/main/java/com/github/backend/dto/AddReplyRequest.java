@@ -9,4 +9,6 @@ public class AddReplyRequest {
     private Integer userId;
     private String replyContent;
     private String nickname;
+    private Integer point;
+
 }

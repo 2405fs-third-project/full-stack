@@ -42,6 +42,4 @@ public class User {
     @Column(name = "point")
     private Integer point = 0;
 
-
-
 }

@@ -4,6 +4,7 @@ import com.github.backend.dto.AddPostRequest;
 import com.github.backend.dto.PostResponse;
 import com.github.backend.model.Board;
 import com.github.backend.model.Post;
+import com.github.backend.model.User;
 import com.github.backend.repository.BoardRepository;
 import com.github.backend.repository.PostRepository;
 import com.github.backend.repository.UserRepository;
@@ -25,11 +26,20 @@ public class PostService {
 
     @Transactional //게시글 작성
     public Post createPost(AddPostRequest addPostRequest) {
-        Board board = boardRepository.findById(1).orElseThrow(() -> new RuntimeException("Board not found"));
+        // 요청에서 boardId를 동적으로 받아서 해당 게시판을 조회
+        Board board = boardRepository.findById(addPostRequest.getBoardId())
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+
+        User user = userRepository.findById(addPostRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setPoint(user.getPoint() + 10);
+        userRepository.save(user); // 업데이트된 포인트 정보 저장
 
         Post post = new Post();
-        post.setBoard(board);
-        post.setUser(userRepository.findById(addPostRequest.getUserId()).orElseThrow(() -> new RuntimeException("User not found")));
+        post.setBoard(board); // 동적으로 조회한 게시판을 설정
+        post.setUser(userRepository.findById(addPostRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found")));
         post.setPostNumber(addPostRequest.getPostNumber());
         post.setPostName(addPostRequest.getPostName());
         post.setPostContent(addPostRequest.getPostContent());
@@ -84,9 +94,25 @@ public class PostService {
         ));
     }
 
-    @Transactional //게시글 삭제
+    @Transactional // 게시글 삭제
     public void deletePost(Integer id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        // 게시글 조회
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // 사용자 조회
+        User user = post.getUser();
+
+        // 포인트 10점 감점 (포인트가 0보다 작아지지 않도록 조건 처리)
+        if (user.getPoint() >= 10) {
+            user.setPoint(user.getPoint() - 10);
+        } else {
+            user.setPoint(0); // 포인트가 0보다 작아질 경우 0으로 설정
+        }
+
+        userRepository.save(user); // 업데이트된 포인트 정보 저장
+
+        // 게시글 삭제
         postRepository.delete(post);
     }
 

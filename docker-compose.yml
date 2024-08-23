@@ -1,17 +1,17 @@
 version: "3.8"
 services:
   frontend:
-    image: codingold/filmfinder-app-frontend:latest
+    image: ${DOCKER_USER}/filmfinder-app-frontend:latest
     container_name: frontend
     ports:
       - "3000:80"
     environment:
-      - REACT_APP_API_URL=http://13.125.98.63:8080/api
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
     networks:
       - app-network
 
   backend:
-    image: codingold/filmfinder-app-backend:latest
+    image: ${DOCKER_USER}/filmfinder-app-backend:latest
     container_name: backend
     ports:
       - "8080:8080"
