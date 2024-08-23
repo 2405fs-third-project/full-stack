@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:80"
     env_file:
-      - /home/ubuntu/full-stack/frontend.env
+      - .env
     networks:
       - app-network
 
@@ -16,7 +16,7 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - /home/ubuntu/full-stack/backend.env
+      - .env
     networks:
       - app-network
 

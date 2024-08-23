@@ -8,6 +8,7 @@ import com.github.backend.service.MessageService;
 import com.github.backend.service.TokenService;
 import com.github.backend.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -74,4 +75,21 @@ public class UserController {
         }
     }
 
+    @GetMapping("/auth")
+    public ResponseEntity<String> authenticateUser(@RequestHeader("Authorization") String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
+        if (!tokenService.isTokenExpired(token)) {
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Authorization", "Bearer " + token);
+            return ResponseEntity.ok()
+                    .headers(responseHeaders)
+                    .body(MessageService.SUCCEED_ACCESS_TOKEN.getMessage());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(MessageService.EXPIRED_ACCESS_TOKEN.getMessage());
+        }
+    }
 }
