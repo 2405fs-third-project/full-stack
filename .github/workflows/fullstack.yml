@@ -16,10 +16,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
@@ -30,21 +30,16 @@ jobs:
           docker build --no-cache -t ${{ env.DOCKER_IMAGE_BACKEND }} -f Dockerfile .
           docker push ${{ env.DOCKER_IMAGE_BACKEND }}
 
-      - name: Check build directory
-        run: |
-          cd backend
-          ls -al build/libs/
-
   build-frontend:
     runs-on: ubuntu-latest
     needs: build-backend
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
@@ -54,11 +49,6 @@ jobs:
           cd frontend
           docker build --no-cache -t ${{ env.DOCKER_IMAGE_FRONTEND }} -f Dockerfile .
           docker push ${{ env.DOCKER_IMAGE_FRONTEND }}
-
-      - name: Check build directory
-        run: |
-          cd backend
-          ls -al build/libs/
 
   deploy:
     runs-on: ubuntu-latest
