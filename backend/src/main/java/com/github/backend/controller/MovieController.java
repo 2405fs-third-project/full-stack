@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -43,6 +45,7 @@ public class MovieController {
 
     @GetMapping("/search")
     public List<Movie> searchMovies(@RequestParam String searchQuery) {
-        return movieService.searchMovies(searchQuery);
+        String decodedQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8);
+        return movieService.searchMovies(decodedQuery);
     }
 }
