@@ -41,8 +41,9 @@ public class MovieController {
         return ResponseEntity.ok(recommendedMovies);
     }
 
-    @GetMapping("/search")
-    public List<Movie> searchMovies(@RequestParam String searchQuery) {
-        return movieService.searchMovies(searchQuery);
-    }
+//    @PostMapping("/search")
+//    public Movie search(@RequestBody) {
+//        String searchQuery = searchRequest.getSearchQuery();
+//        return movieService.searchMovie(searchQuery);
+//    }
 }
