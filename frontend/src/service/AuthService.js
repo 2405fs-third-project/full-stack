@@ -1,54 +1,76 @@
 import axios from "axios";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
-const API_URL = "http://localhost:8080/api/user";
+const apiUrl = process.env.REACT_APP_API_URL;
 
-class AuthService {
-  async registerUser(userData) {
-    try {
-      const response = await axios.post(`${API_URL}/register`, userData);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || "회원가입 중 오류가 발생했습니다.";
-    }
-  }
+const AuthContext = createContext(null);
 
-  async validateToken(token) {
-    try {
-      const response = await axios.post(
-        `${API_URL}/validateToken`,
-        { token },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  const logout = useCallback(() => {
+    setUser(null);
+    localStorage.removeItem("token");
+    delete axios.defaults.headers.common["Authorization"];
+  }, []);
+
+  const verifyToken = useCallback(
+    async (token) => {
+      try {
+        const response = await axios.get(`${apiUrl}/auth/verify`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.data.success) {
+          setUser(response.data.user);
+        } else {
+          logout();
         }
-      );
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || "토큰 검증 중 오류가 발생했습니다.";
-    }
-  }
-
-   // 로그인
-   async loginUser(credentials) {
-    try {
-      const response = await axios.post(`${API_URL}/login`, credentials);
-      if (response.headers.authorization) {  // 토큰을 헤더에서 가져옴
-        localStorage.setItem("user", JSON.stringify(response.data)); // 사용자 정보 저장
-        localStorage.setItem("token", response.headers.authorization.split(' ')[1]); // 토큰 저장
+      } catch (error) {
+        console.error("토큰 검증 오류:", error);
+        logout();
       }
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || "로그인 중 오류가 발생했습니다.";
+    },
+    [logout]
+  );
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      verifyToken(token);
     }
-  }
+  }, [verifyToken]);
 
-  // 로그아웃
-  logoutUser() {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");  // 토큰 삭제
-  }
-}
+  const login = (userData, token) => {
+    setUser(userData);
+    localStorage.setItem("token", token);
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  };
 
-const authServiceInstance = new AuthService();
-export default authServiceInstance;
+  const hasAccess = (boardName) => {
+    if (user && user.role) {
+      if (boardName === user.role) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout, hasAccess }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+
+export default AuthContext;

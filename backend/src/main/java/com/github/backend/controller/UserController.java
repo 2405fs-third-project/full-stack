@@ -37,12 +37,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody User user) {
         try {
-            String LoginResult = authenticationService.authenticate(user.getUserId(),user.getPassword());
+            String LoginResult = authenticationService.authenticate(user.getUserId(), user.getPassword());
             if (LoginResult.startsWith("ERROR: ")) {
                 return new ResponseEntity<>(LoginResult, HttpStatus.BAD_REQUEST);
             }
             return ResponseEntity.ok()
-                    .header("Authorization", "Bearer " + LoginResult)
+                    .header("Authorization", "Bearer " + LoginResult) // JWT 토큰을 헤더에 포함
                     .body(MessageService.SUCCEED_LOGIN.getMessage());
 
         } catch (Exception e) {

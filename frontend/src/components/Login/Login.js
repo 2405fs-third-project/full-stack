@@ -1,12 +1,12 @@
 import axios from "axios";
-import { default as React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../../api/Api";
 import { useAuth } from "../context/AuthContext";
 import "./Login.css";
 
 const Login = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const { login, user } = useAuth();
 
   const [idTouched, setIdTouched] = useState(false);
@@ -65,16 +65,20 @@ const Login = () => {
         password: pw,
       });
 
-      if (response.data.success) {
-        // 로그인 성공 처리
-        console.log("로그인 성공:", response.data);
-
-        login(response.data.user, response.headers['authorization'].split(' ')[1]); // 사용자 정보와 토큰을 AuthContext에 저장
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${response.headers['authorization'].split(' ')[1]}`; // axios 기본 헤더에 토큰 설정
-
-        navigate("/");
+      if (response.status === 200 || response.status === 201) {
+        const authorizationHeader = response.headers["authorization"];
+        if (authorizationHeader) {
+          const token = authorizationHeader.split(" ")[1];
+          if (token) {
+            console.log("받은 토큰:", token); // 받은 토큰 출력
+            login(response.data.user, token); // 사용자 정보와 토큰을 AuthContext에 저장
+            navigate("/");
+          } else {
+            throw new Error("토큰이 없습니다.");
+          }
+        } else {
+          throw new Error("Authorization 헤더가 없습니다.");
+        }
       } else {
         setErrorMessage(response.data.message || "로그인에 실패했습니다.");
       }

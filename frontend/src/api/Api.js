@@ -1,72 +1,131 @@
 import axios from "axios";
 
-export const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
+export const apiUrl =
+  process.env.REACT_APP_API_URL || "http://13.125.98.63:8080/api";
+const API_URL = `${apiUrl}/posts`;
 
-const API_URL = "http://localhost:8080/api/posts";
+axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(
+  "token"
+)}`;
 
-export const getPosts = async () => {
-  const response = await axios.get(API_URL);
-  return response.data;
+export const getPostsByBoardId = async (boardId) => {
+  try {
+    const response = await axios.get(`${API_URL}?boardId=${boardId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw error;
+  }
 };
 
 export const getPost = async (id) => {
-  const response = await axios.get(`${API_URL}/${id}`);
-  return response.data;
+  try {
+    const response = await axios.get(`${API_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    throw error;
+  }
 };
 
 export const createPost = async (postData) => {
-  const response = await axios.post(API_URL, postData);
-  return response.data;
+  try {
+    const response = await axios.post(API_URL, postData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating post:", error);
+    throw error;
+  }
 };
 
 export const updatePost = async (updatedPost) => {
-  const response = await axios.put(
-    `${API_URL}/modify/${updatedPost.id}`,
-    updatedPost
-  );
-  return response.data;
+  try {
+    const response = await axios.put(
+      `${API_URL}/${updatedPost.id}`,
+      updatedPost
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating post:", error);
+    throw error;
+  }
 };
 
 export const deletePost = async (id) => {
-  await axios.delete(`${API_URL}/delete/${id}`);
+  try {
+    await axios.delete(`${API_URL}/${id}`);
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
+  }
 };
 
 export const updateRecommendation = async (id) => {
-  const response = await axios.post(`${API_URL}/${id}/like`);
-  return response.data;
+  try {
+    const response = await axios.patch(`${API_URL}/${id}/like`);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating recommendation:", error);
+    throw error;
+  }
 };
 
 export const decreaseRecommendation = async (id) => {
-  const response = await axios.post(`${API_URL}/${id}/dislike`);
-  return response.data;
+  try {
+    const response = await axios.patch(`${API_URL}/${id}/dislike`);
+    return response.data;
+  } catch (error) {
+    console.error("Error decreasing recommendation:", error);
+    throw error;
+  }
 };
 
 export const addComment = async (postId, userId, comment) => {
-  const response = await axios.post(`${API_URL}/${postId}/comments`, {
-    user_id: userId,
-    reply_content: comment,
-    reply_create: new Date().toISOString(),
-  });
-  return response.data;
+  try {
+    const response = await axios.post(`${API_URL}/${postId}/comments`, {
+      user_id: userId,
+      reply_content: comment,
+      reply_create: new Date().toISOString(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    throw error;
+  }
 };
 
 export const updateComment = async (postId, commentId, newComment) => {
-  const response = await axios.put(
-    `${API_URL}/${postId}/comments/${commentId}`,
-    {
-      reply_content: newComment,
-    }
-  );
-  return response.data;
+  try {
+    const response = await axios.put(
+      `${API_URL}/${postId}/comments/${commentId}`,
+      {
+        reply_content: newComment,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating comment:", error);
+    throw error;
+  }
 };
 
 export const deleteComment = async (postId, commentId) => {
-  await axios.delete(`${API_URL}/${postId}/comments/${commentId}`);
+  try {
+    await axios.delete(`${API_URL}/${postId}/comments/${commentId}`);
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    throw error;
+  }
 };
 
 export const incrementViews = async (id) => {
-  const response = await axios.patch(`${API_URL}/${id}/views`);
-  return response.data;
+  try {
+    const response = await axios.patch(`${API_URL}/${id}/views`);
+    return response.data;
+  } catch (error) {
+    console.error("Error incrementing views:", error);
+    throw error;
+  }
 };
 
 export const login = async (credentials) => {
@@ -74,8 +133,20 @@ export const login = async (credentials) => {
     const response = await axios.post(`${apiUrl}/user/login`, credentials);
     const token = response.data.token;
     if (token) {
-      localStorage.setItem("token", token); // 토큰 저장
+      localStorage.setItem("token", token);
     }
+    return response.data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const updateUserPoints = async (userId, points) => {
+  try {
+    const response = await axios.post(`${apiUrl}/user/update-points`, {
+      userId,
+      points,
+    });
     return response.data;
   } catch (error) {
     handleError(error);
@@ -84,16 +155,15 @@ export const login = async (credentials) => {
 
 const handleError = (error) => {
   if (error.response) {
-    console.error("서버 응답 오류:", error.response.data);
+    console.error("Server response error:", error.response.data);
   } else if (error.request) {
-    console.error("네트워크 오류:", error.request);
+    console.error("Network error:", error.request);
   } else {
-    console.error("로그인 처리 중 오류:", error.message);
+    console.error("Error during login:", error.message);
   }
   throw error;
 };
 
-// 모든 API 요청 시 토큰을 헤더에 포함
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -106,5 +176,3 @@ axios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
-

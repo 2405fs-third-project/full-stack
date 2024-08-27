@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Notice from "./components/Notice/Notice";
+import Notice2 from "./components/Notice/Notice";
 import PostDetail from "./components/Post/PostDetail";
 import WritePost from "./components/Post/WritePost";
 import Signup from "./components/Signup/SignUp";
@@ -24,6 +25,7 @@ function App() {
               <Route path="/TermsOfUse" element={<TermsOfUse />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/notice" element={<Notice />} />
+              <Route path="/notice2" element={<Notice2 />} />
               <Route path="/writepost" element={<WritePost />} />
               <Route path="/post/:postId" element={<PostDetail />} />
               <Route path="/" element={<MainForm />} />

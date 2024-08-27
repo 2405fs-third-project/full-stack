@@ -17,4 +17,5 @@ public class AddPostRequest {
     private Integer likes;
     private LocalDateTime postCreate;
     private String type;
+    private Integer boardId;  // boardId 필드 추가
 }

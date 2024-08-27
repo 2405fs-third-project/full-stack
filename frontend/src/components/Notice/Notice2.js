@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getPostsByBoardId } from "../../api/Api";
-import "./Notice.css";
+import "./Notice2.css";
 
 const Notice = () => {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 10;
 
-  const boardId = 1;
+  const boardId = 2;
 
   useEffect(() => {
     const fetchPosts = async () => {

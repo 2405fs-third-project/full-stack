@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class PostResponse {
 
+    private Integer id; // 게시물 ID 추가
     private Integer userId;
     private Integer postNumber;
     private String postName;

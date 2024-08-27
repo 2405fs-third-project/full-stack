@@ -10,20 +10,20 @@ import java.util.Date;
 
 @Service
 public class TokenService {
-    @Value("${jjwt.secret}")
+
+    @Value("${jwt.secret}")
     private String SECRET_KEY;
-    @Value("${jjwt.expiration}")
+
+    @Value("${jwt.expiration}")
     private Long EXPIRATION;
-
-
 
     public String generateToken(String id, String role) {
         return Jwts.builder()
                 .setSubject(id)
                 .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+EXPIRATION))
-                .signWith(SignatureAlgorithm.HS256,SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }
 
@@ -36,8 +36,11 @@ public class TokenService {
 
     public boolean validateToken(String token, String id) {
         final String userId = extractClaims(token).getSubject();
-        return (userId.equals(id) && !isTokenExpired(token));
+        boolean isValid = (userId.equals(id) && !isTokenExpired(token));
+        System.out.println("Token validation result for user " + userId + ": " + isValid);
+        return isValid;
     }
+
 
     private boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());

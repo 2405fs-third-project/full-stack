@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -22,14 +24,15 @@ public class PostService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-
-    @Transactional //게시글 작성
+    @Transactional // 게시글 작성
     public Post createPost(AddPostRequest addPostRequest) {
-        Board board = boardRepository.findById(1).orElseThrow(() -> new RuntimeException("Board not found"));
+        Board board = boardRepository.findById(addPostRequest.getBoardId())
+                .orElseThrow(() -> new RuntimeException("Board not found"));
 
         Post post = new Post();
         post.setBoard(board);
-        post.setUser(userRepository.findById(addPostRequest.getUserId()).orElseThrow(() -> new RuntimeException("User not found")));
+        post.setUser(userRepository.findById(addPostRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found")));
         post.setPostNumber(addPostRequest.getPostNumber());
         post.setPostName(addPostRequest.getPostName());
         post.setPostContent(addPostRequest.getPostContent());
@@ -40,15 +43,16 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    @Transactional(readOnly = true) //게시글 확인
-    public Optional<PostResponse> getPostById(Integer id) { // 게시글 확인
+    @Transactional(readOnly = true) // 게시글 확인
+    public Optional<PostResponse> getPostById(Integer id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         post.setViews(post.getViews() + 1); // 조회수 증가
-        postRepository.save(post); // 변경사항 저장
+        postRepository.save(post);
 
         return Optional.of(new PostResponse(
+                post.getId(),
                 post.getUser().getId(),
                 post.getPostNumber(),
                 post.getPostName(),
@@ -61,9 +65,29 @@ public class PostService {
         ));
     }
 
-    @Transactional //게시글 수정
+    @Transactional(readOnly = true) // 게시판 ID에 따른 게시글 목록 조회
+    public List<PostResponse> getPostsByBoardId(Integer boardId) {
+        List<Post> posts = postRepository.findByBoardId(boardId);
+        return posts.stream()
+                .map(post -> new PostResponse(
+                        post.getId(),
+                        post.getUser().getId(),
+                        post.getPostNumber(),
+                        post.getPostName(),
+                        post.getPostContent(),
+                        post.getViews(),
+                        post.getLikes(),
+                        post.getPostCreate(),
+                        post.getUser().getNickname(),
+                        post.getType()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional // 게시글 수정
     public Optional<PostResponse> updatePost(Integer id, AddPostRequest addPostRequest) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
 
         post.setPostName(addPostRequest.getPostName());
         post.setPostContent(addPostRequest.getPostContent());
@@ -72,6 +96,7 @@ public class PostService {
         postRepository.save(post);
 
         return Optional.of(new PostResponse(
+                post.getId(),
                 post.getUser().getId(),
                 post.getPostNumber(),
                 post.getPostName(),
@@ -84,20 +109,45 @@ public class PostService {
         ));
     }
 
-    @Transactional //게시글 삭제
+    @Transactional // 게시글 삭제
     public void deletePost(Integer id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
         postRepository.delete(post);
     }
 
-    @Transactional //좋아요 증가
+    @Transactional // 좋아요 증가
     public Optional<PostResponse> increaseLikes(Integer id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        post.setLikes(post.getLikes() + 1); //좋아요 수 증가
+        post.setLikes(post.getLikes() + 1);
         postRepository.save(post);
 
         return Optional.of(new PostResponse(
+                post.getId(),
+                post.getUser().getId(),
+                post.getPostNumber(),
+                post.getPostName(),
+                post.getPostContent(),
+                post.getViews(),
+                post.getLikes(),
+                post.getPostCreate(),
+                post.getUser().getNickname(),
+                post.getType()
+        ));
+    }
+
+    @Transactional // 조회수 증가
+    public Optional<PostResponse> incrementViews(Integer id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        post.setViews(post.getViews() + 1); // 조회수 증가
+        postRepository.save(post);
+
+        return Optional.of(new PostResponse(
+                post.getId(),
                 post.getUser().getId(),
                 post.getPostNumber(),
                 post.getPostName(),

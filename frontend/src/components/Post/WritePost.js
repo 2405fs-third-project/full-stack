@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { usePosts } from "../context/PostContext";
-import { createPost } from "../../api/Api"; // 올바른 경로로 수정
+import { createPost, updateUserPoints } from "../../api/Api";
+import { useAuth } from "../context/AuthContext"; // AuthContext 추가
 import "./WritePost.css";
 
 const WritePost = () => {
+  const { user } = useAuth(); // 로그인한 유저 정보 가져오기
   const [formData, setFormData] = useState({
-    nickname: "",
-    password: "",
     postName: "",
     content: "",
     tab: "잡담", // 탭 선택에 대한 초기값 설정
@@ -27,18 +27,28 @@ const WritePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      navigate("/login"); // 로그인 페이지로 이동
+      return;
+    }
+
     const newPost = {
       postNumber: formData.postNumber,
       postName: formData.postName,
       postContent: formData.content,
       views: 0,
       likes: 0,
-      userId: formData.userId,
+      userId: user.id, // 로그인한 유저의 ID 사용
       postCreate: new Date().toISOString(),
+      boardId: 1, // 또는 2로 설정하여 게시판을 구분
     };
 
     try {
       await createPost(newPost);
+      // 유저 포인트 업데이트 (10점 추가)
+      await updateUserPoints(user.id, 10);
       navigate("/notice");
     } catch (error) {
       console.error("Error creating post:", error);

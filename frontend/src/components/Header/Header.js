@@ -1,35 +1,43 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import "./Header.css";
-import { Navigate, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { IoPersonCircleOutline } from "react-icons/io5";
+import { apiUrl } from "../../api/Api";
+import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const { user, logout } = useAuth();
 
   const handleLoginClick = () => {
-    Navigate("/login");
-  };
-
-  const handleLoginClick2 = () => {
-    Navigate("/TermsOfUse");
-  };
-
-  const handleSearch = () => {
-    console.log("검색어", searchQuery);
-    setSearchQuery(""); // 검색 후 입력 값 초기화
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSearch(e);
+    if (user) {
+      logout();
+    } else {
+      navigate("/login");
     }
   };
 
-  const handleSearch = () => {
-    console.log("검색어", searchQuery);
-    setSearchQuery(""); // 검색 후 입력 값 초기화
+  const handleSignupClick = () => {
+    navigate("/TermsOfUse");
+  };
+
+  const handleSearch = async () => {
+    if (!searchQuery) return;
+
+    try {
+      const response = await axios.get(`${apiUrl}/movies/search`, {
+        params: { searchQuery },
+      });
+      setSearchResults(response.data);
+      console.log("검색 결과:", response.data);
+    } catch (error) {
+      console.error("검색 중 오류 발생", error);
+    }
+    setSearchQuery("");
   };
 
   const handleKeyDown = (e) => {
@@ -62,12 +70,24 @@ const Header = () => {
           <IoPersonCircleOutline />
         </div>
         <div className="login" onClick={handleLoginClick}>
-          로그인
+          {user ? "로그아웃" : "로그인"}
         </div>
-        <div className="signup" onClick={handleLoginClick2}>
-          회원가입
-        </div>
+        {!user && (
+          <div className="signup" onClick={handleSignupClick}>
+            회원가입
+          </div>
+        )}
       </div>
+
+      {searchResults.length > 0 && (
+        <div className="search_results">
+          {searchResults.map((result) => (
+            <div key={result.id} className="search_result_item">
+              {result.title}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

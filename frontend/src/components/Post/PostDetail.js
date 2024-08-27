@@ -10,6 +10,7 @@ import {
   deleteComment,
   updateComment,
   incrementViews,
+  updateUserPoints,
 } from "../../api/Api";
 import "./PostDetail.css";
 
@@ -24,9 +25,23 @@ const PostDetail = () => {
   const [editingCommentIndex, setEditingCommentIndex] = useState(null);
   const [editedComment, setEditedComment] = useState("");
 
-  const hasIncremented = useRef(true);
+  const hasIncremented = useRef(false);
 
   useEffect(() => {
+    if (!postId) {
+      console.error("Invalid postId:", postId);
+      navigate("/notice");
+      return;
+    }
+
+    const postIdNumber = parseInt(postId, 10);
+
+    if (isNaN(postIdNumber)) {
+      console.error("Invalid postId:", postId);
+      navigate("/notice");
+      return;
+    }
+
     const fetchPost = async (id) => {
       try {
         if (!hasIncremented.current) {
@@ -34,20 +49,21 @@ const PostDetail = () => {
           hasIncremented.current = true;
         }
         const data = await getPost(id);
+        console.log(data); // 데이터 구조 확인용 로그 추가
         setPost(data);
-        setEditedTitle(data.post_name);
-        setEditedContent(data.post_content);
+        setEditedTitle(data.postName);
+        setEditedContent(data.postContent);
       } catch (error) {
         console.error("Error fetching post:", error);
       }
     };
 
-    fetchPost(Number(postId));
+    fetchPost(postIdNumber);
 
     return () => {
       hasIncremented.current = false;
     };
-  }, [postId]);
+  }, [postId, navigate]);
 
   const handleRecommendation = async (type) => {
     try {
@@ -76,11 +92,11 @@ const PostDetail = () => {
     try {
       await updatePost({
         ...post,
-        post_name: editedTitle,
-        post_content: editedContent,
+        postName: editedTitle,
+        postContent: editedContent,
       });
       setIsEditing(false);
-      setPost({ ...post, post_name: editedTitle, post_content: editedContent });
+      setPost({ ...post, postName: editedTitle, postContent: editedContent });
     } catch (error) {
       console.error("Error updating post:", error);
     }
@@ -89,7 +105,8 @@ const PostDetail = () => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addComment(post.id, post.user_id, comment);
+      await addComment(post.id, post.userId, comment);
+      await updateUserPoints(post.userId, 5);
       const updatedPost = await getPost(post.id);
       setPost(updatedPost);
       setComment("");
@@ -113,7 +130,7 @@ const PostDetail = () => {
     const selectedComment = post.comments.find(
       (comment) => comment.id === commentId
     );
-    setEditedComment(selectedComment.reply_content);
+    setEditedComment(selectedComment.replyContent);
   };
 
   const handleEditCommentSubmit = async (commentId) => {
@@ -143,12 +160,13 @@ const PostDetail = () => {
                 onChange={(e) => setEditedTitle(e.target.value)}
               />
             ) : (
-              post.post_name
+              post.postName
             )}
           </h2>
           <div className="post-meta">
-            <span>{post.nickname}</span> | <span>{post.post_create}</span> |{" "}
-            <span>조회 {post.views}</span> | <span>추천 {post.likes}</span>
+            <span>{post.user?.nickname || "익명"}</span> |{" "}
+            <span>{post.postCreate}</span> | <span>조회 {post.views}</span> |{" "}
+            <span>추천 {post.likes}</span>
           </div>
         </div>
         {isEditing ? (
@@ -162,7 +180,7 @@ const PostDetail = () => {
           </div>
         ) : (
           <div className="post-content">
-            <div>{post.post_content}</div>
+            <div>{post.postContent}</div>
           </div>
         )}
         <div className="post-bottom">
@@ -192,38 +210,42 @@ const PostDetail = () => {
             <button type="submit">등록</button>
           </form>
           <div className="comments-list">
-            {post.comments.map((c) => (
-              <div key={c.id} className="comment">
-                <div className="comment-author">{c.nickname}</div>
-                {editingCommentIndex === c.id ? (
-                  <div className="edit-box">
-                    <textarea
-                      className="comment-edit-textarea"
-                      value={editedComment}
-                      onChange={(e) => setEditedComment(e.target.value)}
-                    />
-                    <button onClick={() => handleEditCommentSubmit(c.id)}>
-                      수정 완료
-                    </button>
-                    <button onClick={() => setEditingCommentIndex(null)}>
-                      취소
-                    </button>
-                  </div>
-                ) : (
-                  <div className="comment-box">
-                    <div className="comment-content">{c.reply_content}</div>
-                    <div className="edit-comment">
-                      <button onClick={() => handleEditComment(c.id)}>
-                        수정
+            {post.comments && post.comments.length > 0 ? (
+              post.comments.map((c) => (
+                <div key={c.id} className="comment">
+                  <div className="comment-author">{c.nickname}</div>
+                  {editingCommentIndex === c.id ? (
+                    <div className="edit-box">
+                      <textarea
+                        className="comment-edit-textarea"
+                        value={editedComment}
+                        onChange={(e) => setEditedComment(e.target.value)}
+                      />
+                      <button onClick={() => handleEditCommentSubmit(c.id)}>
+                        수정 완료
                       </button>
-                      <button onClick={() => handleDeleteComment(c.id)}>
-                        삭제
+                      <button onClick={() => setEditingCommentIndex(null)}>
+                        취소
                       </button>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  ) : (
+                    <div className="comment-box">
+                      <div className="comment-content">{c.replyContent}</div>
+                      <div className="edit-comment">
+                        <button onClick={() => handleEditComment(c.id)}>
+                          수정
+                        </button>
+                        <button onClick={() => handleDeleteComment(c.id)}>
+                          삭제
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div>No comments available</div>
+            )}
           </div>
         </div>
       </div>
