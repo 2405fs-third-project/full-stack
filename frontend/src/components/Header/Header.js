@@ -26,8 +26,13 @@ const Header = () => {
       const response = await axios.get(`${apiUrl}/movies/search`, {
         params: { searchQuery },
       });
-      setSearchResults(response.data); // 검색 결과 상태 업데이트
-      console.log("검색 결과:", response.data);
+
+      if (response.status === 200) {
+        setSearchResults(response.data); // 검색 결과 상태 업데이트
+        console.log("검색 결과:", response.data);
+      } else {
+        console.error("검색 중 오류 발생:", response.status);
+      }
     } catch (error) {
       console.error("검색 중 오류 발생", error);
     }
@@ -38,6 +43,11 @@ const Header = () => {
     if (e.key === "Enter") {
       handleSearch(e);
     }
+  };
+
+  const handleResultClick = (movieId) => {
+    // 영화 상세 페이지로 이동
+    navigate(`/movies/${movieId}`);
   };
 
   return (
@@ -74,8 +84,12 @@ const Header = () => {
       {searchResults.length > 0 && (
         <div className="search_results">
           {searchResults.map((result) => (
-            <div key={result.id} className="search_result_item">
-              {result.title}
+            <div
+              key={result.id}
+              className="search_result_item"
+              onClick={() => handleResultClick(result.id)} // 클릭 시 영화 상세 페이지로 이동
+            >
+              {result.movieName} - {result.movieGenre} - {result.movieDirector}
             </div>
           ))}
         </div>
