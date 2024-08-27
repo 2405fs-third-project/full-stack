@@ -43,9 +43,18 @@ public class MovieController {
         return ResponseEntity.ok(recommendedMovies);
     }
 
+<<<<<<< HEAD
     @GetMapping("/search")
     public List<Movie> searchMovies(@RequestParam String searchQuery) {
         String decodedQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8);
         return movieService.searchMovies(decodedQuery);
     }
 }
+=======
+//    @PostMapping("/search")
+//    public Movie search(@RequestBody) {
+//        String searchQuery = searchRequest.getSearchQuery();
+//        return movieService.searchMovie(searchQuery);
+//    }
+}
+>>>>>>> 801a86516408c8dd6fda73062edb1149b7a3901c
