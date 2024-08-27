@@ -22,6 +22,7 @@ public class ReplyService {
     private final ReplyRepository replyRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional //댓글 달기
     public void createReply(AddReplyRequest addReplyRequest) {
@@ -31,9 +32,9 @@ public class ReplyService {
         User user = userRepository.findById(addReplyRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setPoint(user.getPoint() + 5);
-        userRepository.save(user); // 업데이트된 포인트 정보 저장
-
+        Integer replypt = user.getPoint() + 5;
+        String userId = user.getUserId();
+        userService.updateUserRole(replypt,userId);
 
         Reply reply = Reply.builder()
                 .post(post)
@@ -64,9 +65,13 @@ public class ReplyService {
         User user = reply.getUser();
 
         if (user.getPoint() >= 5) {
-            user.setPoint(user.getPoint() - 5);
+            Integer postpt = user.getPoint() - 5;
+            String userId = user.getUserId();
+            userService.updateUserRole(postpt,userId);
         } else {
             user.setPoint(0);
+            String userId = user.getUserId();
+            userService.updateUserRole(0,userId); // 포인트가 0보다 작아질 경우 0으로 설정
         }
 
         userRepository.save(user);
