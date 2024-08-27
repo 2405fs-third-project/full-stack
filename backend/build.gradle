@@ -54,8 +54,8 @@ tasks.withType(JavaCompile) {
 }
 
 jar {
-    archiveBaseName = 'backend'
-    version = '0.0.1-SNAPSHOT'
+	archiveBaseName = 'backend'
+	version = '0.0.1-SNAPSHOT'
 	enabled = false
 }
 
