@@ -1,6 +1,7 @@
 package com.github.backend.controller;
 
 import com.github.backend.dto.AddReplyRequest;
+import com.github.backend.dto.PostResponse;
 import com.github.backend.dto.ReplyResponse;
 import com.github.backend.dto.UpdateReplyRequest;
 import com.github.backend.model.Reply;
@@ -8,6 +9,8 @@ import com.github.backend.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -38,5 +41,11 @@ public class ReplyController {
     public ResponseEntity<ReplyResponse> getReply(@PathVariable Integer replyId) {
         ReplyResponse replyResponse = replyService.getReply(replyId);
         return ResponseEntity.ok(replyResponse);
+    }
+
+    @GetMapping("/post/{postId}")  // 해당 게시글의 댓글 조회
+    public ResponseEntity<List<ReplyResponse>> getRepliesByPostId(@PathVariable Integer postId) {
+        List<ReplyResponse> replies = replyService.getRepliesByPostId(postId);
+        return ResponseEntity.ok(replies);
     }
 }

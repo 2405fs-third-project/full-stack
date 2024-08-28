@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -59,5 +60,11 @@ public class PostController {
         Optional<PostResponse> likedPost = postService.increaseLikes(id);
         return likedPost.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/all") //모든 게시물 조회
+    public ResponseEntity<List<PostResponse>> getAllPosts() {
+        List<PostResponse> posts = postService.getAllPosts();
+        return ResponseEntity.ok(posts);
     }
 }

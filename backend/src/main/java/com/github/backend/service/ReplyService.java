@@ -1,5 +1,6 @@
 package com.github.backend.service;
 
+import com.github.backend.dto.PostResponse;
 import com.github.backend.dto.ReplyResponse;
 import com.github.backend.dto.UpdateReplyRequest;
 import com.github.backend.dto.AddReplyRequest;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -100,5 +103,21 @@ public class ReplyService {
                 reply.getReplyCreate(),
                 reply.getUser().getNickname()
         );
+    }
+
+    @Transactional(readOnly = true) // 특정 게시글의 댓글 목록 조회
+    public List<ReplyResponse> getRepliesByPostId(Integer postId) {
+        List<Reply> replies = replyRepository.findByPostId(postId); // postId로 댓글 필터링
+
+        return replies.stream()
+                .map(reply -> new ReplyResponse(
+                        reply.getId(),
+                        reply.getPost().getId(),
+                        reply.getUser().getId(),
+                        reply.getReplyContent(),
+                        reply.getReplyCreate(),
+                        reply.getUser().getNickname()
+                ))
+                .collect(Collectors.toList());
     }
 }

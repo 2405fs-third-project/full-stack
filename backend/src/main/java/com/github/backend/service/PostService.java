@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -139,5 +141,24 @@ public class PostService {
                 post.getUser().getNickname(),
                 post.getType()
         ));
+    }
+
+    @Transactional(readOnly = true) // 게시글 목록 조회
+    public List<PostResponse> getAllPosts() {
+        List<Post> posts = postRepository.findAll();
+
+        return posts.stream()
+                .map(post -> new PostResponse(
+                        post.getUser().getId(),
+                        post.getPostNumber(),
+                        post.getPostName(),
+                        post.getPostContent(),
+                        post.getViews(),
+                        post.getLikes(),
+                        post.getPostCreate(),
+                        post.getUser().getNickname(),
+                        post.getType()
+                ))
+                .collect(Collectors.toList());
     }
 }
