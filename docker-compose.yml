@@ -1,25 +1,26 @@
 version: "3.8"
 services:
   frontend:
-    image: codingold/filmfinder-app-frontend:latest
+    image: ${DOCKER_HUB_USERNAME}/filmfinder-app-frontend:latest
     container_name: frontend
     ports:
       - "3000:80"
-    environment:
-      - REACT_APP_API_URL=http://13.125.98.63:8080/api
+    env_file:
+      - .env
     networks:
       - app-network
 
   backend:
-    image: codingold/filmfinder-app-backend:latest
+    image: ${DOCKER_HUB_USERNAME}/filmfinder-app-backend:latest
     container_name: backend
     ports:
       - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
+    env_file:
+      - .env
     networks:
       - app-network
 
 networks:
   app-network:
     driver: bridge
+#changes check

@@ -34,16 +34,17 @@ class AuthService {
   async loginUser(credentials) {
     try {
       const response = await axios.post(`${API_URL}/login`, credentials);
-      if (response.headers.authorization) {
+      if (response.headers.Authorization) {
         // 토큰을 헤더에서 가져옴
         localStorage.setItem("user", JSON.stringify(response.data)); // 사용자 정보 저장
-        localStorage.setItem("token", response.headers.authorization.split(" ")[1]); // 토큰 저장
+        localStorage.setItem("token", response.headers.Authorization.split(" ")[1]); // 토큰 저장
       }
-      return response.data;
+      return response;
     } catch (error) {
       throw error.response?.data || "로그인 중 오류가 발생했습니다.";
     }
-  }
+  } 
+  
 
   // 로그아웃
   logoutUser() {

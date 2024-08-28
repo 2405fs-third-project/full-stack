@@ -1,5 +1,6 @@
 package com.github.backend.model;
 
+import com.github.backend.service.MovieState;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -58,9 +59,12 @@ public class Movie {
     @Column(name = "release")
     private Date release;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "movie_state", length = 50)
-    private String movieState;
+    private MovieState movieState;
 
     @Column(name = "language", length = 50)
     private String language;
 }
+
+

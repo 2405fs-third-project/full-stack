@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const apiUrl = process.env.REACT_APP_API_URL || 'http://13.125.98.63:8080/api';
+export const apiUrl = process.env.REACT_APP_API_URL;
 
 const API_URL = "http://13.125.98.63:8080/api/posts";
 
@@ -106,5 +106,3 @@ axios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
-

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { apiUrl } from "../../api/Api";
 import React, {
   createContext,
   useCallback,
@@ -7,9 +8,6 @@ import React, {
   useState,
 } from "react";
 
-// API URL을 환경 변수에서 가져오도록 설정
-const apiUrl = process.env.REACT_APP_API_URL;
-
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -17,13 +15,21 @@ export const AuthProvider = ({ children }) => {
 
   const verifyToken = useCallback(async (token) => {
     try {
-      const response = await axios.get(`${apiUrl}/auth/verify`, {
+      // 헤더에 토큰을 포함하여 서버 측으로 요청
+      const response = await axios.get(`${apiUrl}/user/auth`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (response.data.success) {
-        setUser(response.data.user);
+      
+      if (response.status === 200) {
+        // 서버에서 받은 새로운 토큰을 저장하고, 사용자 데이터를 업데이트
+        const newToken = response.headers["authorization"]?.split(" ")[1];
+        if (newToken) {
+          localStorage.setItem("token", newToken); // 새로운 토큰을 로컬 스토리지에 저장
+          axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`; // 기본 헤더에 새 토큰 설정
+          setUser(response.data.user); // 사용자 정보 저장
+        }
       } else {
-        logout();
+        logout(); // 유효하지 않은 토큰이라면 로그아웃 처리
       }
     } catch (error) {
       console.error("토큰 검증 오류:", error);

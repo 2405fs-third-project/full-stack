@@ -10,11 +10,14 @@ import com.github.backend.repository.PostRepository;
 import com.github.backend.repository.ReplyRepository;
 import com.github.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ReplyService {
@@ -22,28 +25,34 @@ public class ReplyService {
     private final ReplyRepository replyRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
-    @Transactional //댓글 달기
+    @Transactional
     public void createReply(AddReplyRequest addReplyRequest) {
-        Post post = postRepository.findById(addReplyRequest.getPostId())
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+        try {
+            Post post = postRepository.findById(addReplyRequest.getPostId())
+                    .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        User user = userRepository.findById(addReplyRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+            User user = userRepository.findById(addReplyRequest.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setPoint(user.getPoint() + 5);
-        userRepository.save(user); // 업데이트된 포인트 정보 저장
+            Integer replypt = user.getPoint() + 5;
+            String userId = user.getUserId();
+            userService.updateUserRole(replypt, userId);
 
+            Reply reply = Reply.builder()
+                    .post(post)
+                    .user(user)
+                    .replyContent(addReplyRequest.getReplyContent())
+                    .replyCreate(LocalDateTime.now())
+                    .build();
 
-        Reply reply = Reply.builder()
-                .post(post)
-                .user(user)
-                .replyContent(addReplyRequest.getReplyContent())
-                .replyCreate(LocalDateTime.now())
-                .build();
-
-        // 댓글 저장
-        replyRepository.save(reply);
+            // 댓글 저장
+            replyRepository.save(reply);
+        } catch (OptimisticLockingFailureException e) {
+            log.error("Optimistic locking failure while creating reply: {}", e.getMessage());
+            throw new RuntimeException("Failed to create reply due to optimistic locking", e);
+        }
     }
 
     @Transactional
@@ -57,16 +66,20 @@ public class ReplyService {
 
     @Transactional
     public void deleteReply(Integer replyId) {
-        Reply reply = replyRepository.findById(replyId)
+        Reply reply = replyRepository.findByIdWithLock(replyId)
                 .orElseThrow(() -> new RuntimeException("Reply not found"));
 
         // 사용자 조회
         User user = reply.getUser();
 
         if (user.getPoint() >= 5) {
-            user.setPoint(user.getPoint() - 5);
+            Integer postpt = user.getPoint() - 5;
+            String userId = user.getUserId();
+            userService.updateUserRole(postpt, userId);
         } else {
             user.setPoint(0);
+            String userId = user.getUserId();
+            userService.updateUserRole(0, userId); // 포인트가 0보다 작아질 경우 0으로 설정
         }
 
         userRepository.save(user);

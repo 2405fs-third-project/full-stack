@@ -67,8 +67,13 @@ const Login = () => {
 
       if (response.status === 200 || response.status === 201) {
         alert(response.data);
-        // 로그인 성공 처리
         console.log("로그인 성공:", response.data);
+        console.log("Response Headers:", response.headers);
+        console.log("Response Data:", response.data);
+        console.log(response.headers.get("Authorization"));
+        console.log(Object.keys(response.headers));
+        console.log(response.headers.Authorization);
+        console.log(response.headers['x-version']);
         login(response.data.user, (response.headers["authorization"] || "").split(" ")[1]); // 사용자 정보와 토큰을 AuthContext에 저장
         axios.defaults.headers.common["Authorization"] = `Bearer ${
           (response.headers["authorization"] || "").split(" ")[1]
