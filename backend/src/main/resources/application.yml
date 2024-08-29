@@ -33,3 +33,4 @@ kobis:
   api:
     key: 775a62fe3322107b4f1a39f257dc7801
     url: http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json
+    movieListUrl: http://kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json

@@ -6,6 +6,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -16,6 +17,9 @@ public class KobisService {
 
     @Value("${kobis.api.url}")
     private String apiUrl;
+
+    @Value("${kobis.api.movieListUrl}")
+    private String movieListUrl;
 
     private final RestTemplate restTemplate;
 
@@ -51,4 +55,25 @@ public class KobisService {
             throw new RuntimeException("현재 영화 정보를 가져오는 데 실패했습니다.", e);
         }
     }
+
+    public List<Map<String, Object>> getAllMovies() {
+        String url = String.format("%s?key=%s", movieListUrl, apiKey);
+
+        try {
+            Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+
+            if (response == null) {
+                throw new RuntimeException("API 응답이 null입니다.");
+            }
+
+            Map<String, Object> movieListResult = (Map<String, Object>) response.get("movieListResult");
+            if (movieListResult != null) {
+                return (List<Map<String, Object>>) movieListResult.get("movieList");
+            }
+            return List.of();
+        } catch (Exception e) {
+            throw new RuntimeException("영화 목록 정보를 가져오는 데 실패했습니다.", e);
+        }
+    }
+
 }

@@ -39,23 +39,9 @@ public class MovieController {
         return kobisService.getCurrentMovies(today);
     }
 
-    @GetMapping("/{id}")
-    public MovieResponse getMovieById(@PathVariable Integer id) {
-        return movieService.getMovieById(id);
-    }
 
-//    @PostMapping
-//    public ResponseEntity<MovieResponse> createMovie(@Valid @RequestBody AddMovieRequest addMovieRequest) {
-//        // 영화 등록 및 응답 생성
-//        MovieResponse movieResponse = movieService.createMovie(addMovieRequest);
-//
-//        // 응답 반환
-//        return ResponseEntity.status(HttpStatus.CREATED).body(movieResponse);
-//    }
-
-
-    @PostMapping("/recommend") //영화 추천
-    public ResponseEntity<List<MovieResponse>> recommendMovies(@Valid@RequestBody MovieRecommendationRequest request) {
+    @PostMapping("/recommend") // 영화 추천
+    public ResponseEntity<List<MovieResponse>> recommendMovies(@Valid @RequestBody MovieRecommendationRequest request) {
         List<MovieResponse> recommendedMovies = movieService.recommendMovies(request);
         return ResponseEntity.ok(recommendedMovies);
     }

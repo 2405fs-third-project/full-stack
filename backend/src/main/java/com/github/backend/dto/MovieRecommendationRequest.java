@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -11,8 +12,7 @@ import java.util.Date;
 public class MovieRecommendationRequest {
     private String movieGenre;
     private String movieTime;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date release;  // Date 타입 유지
-    private String language;
     private String releaseType;
+    private String language;
+    private LocalDate release;
 }

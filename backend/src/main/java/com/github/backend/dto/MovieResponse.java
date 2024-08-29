@@ -2,6 +2,7 @@ package com.github.backend.dto;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -10,19 +11,18 @@ import java.util.Date;
 @Setter
 @Builder
 public class MovieResponse {
-    private Integer id;
+    private String id;
     private String movieName;
-    private String movieGenre;
-    private String moviePoster;
-    private String movieDirector;
-    private Integer recommend;
-    private String movieActor;
-    private String movieGrade;
-    private Integer movieRanking;
-    private Integer attendance;
-    private String comGrade;
-    private Integer movieTime;
-    private Date release;
-    private String movieState;
-    private String language;
+    private String genre;
+    private String director;
+    private String productionYear;
+    private String actor;
+    private String audit;
+    private String rank;
+    private Integer sales;
+    private String classGrade;
+    private Integer runtime;
+    private LocalDate releaseDate;
+    private String country;
+
 }

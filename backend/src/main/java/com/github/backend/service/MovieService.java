@@ -20,210 +20,18 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class MovieService {
 
-    private final MovieRepository movieRepository;
     private final JPAQueryFactory jpaQueryFactory;
-    private final RuntimeRangeService runtimeRangeService;
+    private final KobisService kobisService;
 
-    @Value("${image.upload.path}")
-    private String imagePath;
-
-    @Value("${image.save.path}")
-    private String imageSavePath;
-
-    @Transactional(readOnly = true)
-    public MovieResponse getMovieById(Integer id) {
-        final String MOVIE_NOT_FOUND_MESSAGE = "Movie not found";
-        final String MOVIE_STATE_ERROR_MESSAGE = "Movie is not currently showing";
-        final String PATH_SEPARATOR = "/";
-
-        // 영화 정보 조회
-        Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(MOVIE_NOT_FOUND_MESSAGE));
-
-        // 영화 상태 확인
-        if (movie.getMovieState() != MovieState.상영중) {
-            throw new IllegalArgumentException(MOVIE_STATE_ERROR_MESSAGE);
-        }
-
-        // 이미지 경로 생성
-        String cleanedImagePath = imagePath.endsWith(PATH_SEPARATOR)
-                ? imagePath.substring(0, imagePath.length() - 1)
-                : imagePath;
-        String moviePosterPath = movie.getMoviePoster().startsWith(PATH_SEPARATOR)
-                ? movie.getMoviePoster().substring(1)
-                : movie.getMoviePoster();
-        String fullImagePath = cleanedImagePath + PATH_SEPARATOR + moviePosterPath;
-
-        // MovieResponse 생성 및 반환
-        return new MovieResponse(
-                movie.getId(),
-                movie.getMovieName(),
-                movie.getMovieGenre(),
-                fullImagePath,
-                movie.getMovieDirector(),
-                movie.getRecommend(),
-                movie.getMovieActor(),
-                movie.getMovieGrade(),
-                movie.getMovieRanking(),
-                movie.getAttendance(),
-                movie.getComGrade(),
-                movie.getMovieTime(),
-                movie.getRelease(),
-                movie.getMovieState().getDisplayName(),
-                movie.getLanguage()
-        );
-    }
-
-//    @Transactional
-//    public MovieResponse createMovie(AddMovieRequest addMovieRequest) {
-//        // 이미지 저장 및 경로 생성
-//        String posterPath = saveImage(addMovieRequest.getMoviePoster());
-//
-//        // MovieState 변환
-//        MovieState movieState = MovieState.fromDisplayName(addMovieRequest.getMovieState());
-//
-//        // Movie 객체 생성 및 필드 설정
-//        Movie movie = Movie.builder()
-//                .movieName(addMovieRequest.getMovieName())
-//                .movieGenre(addMovieRequest.getMovieGenre())
-//                .moviePoster(posterPath)
-//                .movieDirector(addMovieRequest.getMovieDirector())
-//                .recommend(addMovieRequest.getRecommend())
-//                .movieActor(addMovieRequest.getMovieActor())
-//                .movieGrade(addMovieRequest.getMovieGrade())
-//                .movieRanking(addMovieRequest.getMovieRanking())
-//                .attendance(addMovieRequest.getAttendance())
-//                .comGrade(addMovieRequest.getComGrade())
-//                .movieTime(addMovieRequest.getMovieTime())
-//                .release(addMovieRequest.getRelease())
-//                .movieState(movieState)
-//                .build();
-//
-//        // Movie 객체 저장
-//        Movie savedMovie = movieRepository.save(movie);
-//
-//        // MovieResponse 변환 및 반환
-//        return convertToMovieResponse(savedMovie);
-//    }
-//
-
-    @Transactional
-    public List<MovieResponse> recommendMovies(MovieRecommendationRequest request) {
-        System.out.println("Received request: " + request);
-
-        Date releasePreference = request.getRelease();
-        System.out.println("Release Preference: " + releasePreference);
-
-        List<MovieResponse> responses = movieRepository.findAll().stream()
-                .peek(movie -> System.out.println("Processing movie: " + movie))
-                .filter(movie -> filterByGenre(movie, request.getMovieGenre()))
-                .filter(movie -> filterByRuntime(movie, request.getMovieTime()))
-                .filter(movie -> filterByReleaseType(movie, request.getReleaseType()))
-                .filter(movie -> filterByLanguage(movie, request.getLanguage()))
-                .map(this::convertToMovieResponse)
-                .collect(Collectors.toList());
-
-        System.out.println("Filtered movies: " + responses);
-        return responses;
-    }
-
-    private boolean filterByGenre(Movie movie, String genre) {
-        boolean result = genre == null || genre.trim().equalsIgnoreCase(movie.getMovieGenre().trim());
-        System.out.println("Filter by genre: " + genre + " - Result: " + result);
-        return result;
-    }
-
-    private boolean filterByRuntime(Movie movie, String runtime) {
-        if (runtime == null) {
-            System.out.println("Runtime is null, passing all movies");
-            return true;
-        }
-
-        RuntimeRange range = runtimeRangeService.getRangeByDisplayName(runtime);
-        boolean result = range != null && range.isWithinRange(movie.getMovieTime());
-        System.out.println("Filter by runtime: " + runtime + " - Result: " + result);
-        return result;
-    }
-
-    private boolean filterByReleaseType(Movie movie, String releaseTypeDisplayName) {
-        if (releaseTypeDisplayName == null || releaseTypeDisplayName.trim().isEmpty()) {
-            return true;
-        }
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2024, Calendar.JANUARY, 1, 0, 0, 0);
-        Date cutoffDate = calendar.getTime();
-        Date releaseDate = movie.getRelease();
-
-        ReleaseType releaseType;
-        try {
-            releaseType = ReleaseType.fromUserInput(releaseTypeDisplayName);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid release type: " + releaseTypeDisplayName);
-            return false;
-        }
-
-        if (releaseType == null || releaseDate == null) {
-            return false;
-        }
-
-        boolean result = switch (releaseType) {
-            case RECENT_RELEASE -> releaseDate.after(cutoffDate);
-            case CLASSIC -> releaseDate.before(cutoffDate);
-        };
-        System.out.println("Filter by release type: " + releaseTypeDisplayName + " - Result: " + result);
-        return result;
-    }
-
-    private boolean filterByLanguage(Movie movie, String language) {
-        boolean result = language == null || language.trim().equalsIgnoreCase(movie.getLanguage().trim());
-        System.out.println("Filter by language: " + language + " - Result: " + result);
-        return result;
-    }
-
-    private MovieResponse convertToMovieResponse(Movie movie) {
-        // imagePath가 클래스의 필드라면 null 체크 추가
-        if (imagePath == null) {
-            throw new IllegalArgumentException("imagePath cannot be null");
-        }
-
-        String cleanedImagePath = imagePath.endsWith("/") ? imagePath : imagePath + "/";
-        String moviePosterPath = movie.getMoviePoster() != null ? movie.getMoviePoster().replaceFirst("^/", "") : "";
-        String fullImagePath = cleanedImagePath + moviePosterPath;
-
-        // MovieState의 null 체크 추가
-        String movieStateDisplayName = movie.getMovieState() != null
-                ? movie.getMovieState().getDisplayName()
-                : "Unknown"; // 기본값 설정
-
-        return new MovieResponse(
-                movie.getId(),
-                movie.getMovieName(),
-                movie.getMovieGenre(),
-                fullImagePath,
-                movie.getMovieDirector(),
-                movie.getRecommend(),
-                movie.getMovieActor(),
-                movie.getMovieGrade(),
-                movie.getMovieRanking(),
-                movie.getAttendance(),
-                movie.getComGrade(),
-                movie.getMovieTime(),
-                movie.getRelease(),
-                movieStateDisplayName, // MovieState를 문자열로 변환
-                movie.getLanguage()
-        );
-    }
 
     public List<Movie> searchMovies(String searchQuery) {
         return jpaQueryFactory
@@ -241,4 +49,102 @@ public class MovieService {
                 .or(QMovie.movie.movieDirector.containsIgnoreCase(searchQuery))
                 .or(QMovie.movie.movieActor.containsIgnoreCase(searchQuery));
     }
+
+    @Transactional
+    public List<MovieResponse> recommendMovies(MovieRecommendationRequest request) {
+        List<Map<String, Object>> movies = kobisService.getAllMovies();
+
+        return movies.stream()
+                .filter(movie -> filterByGenre(movie, request.getMovieGenre()))
+                .filter(movie -> filterByReleaseType(movie, request.getReleaseType()))
+                .filter(movie -> filterByLanguage(movie, request.getLanguage()))
+                .map(this::convertToMovieResponse)
+                .collect(Collectors.toList());
+    }
+
+    private boolean filterByGenre(Map<String, Object> movie, String genre) {
+        String movieGenre = (String) movie.get("genreAlt");
+        return genre == null || genre.trim().equalsIgnoreCase(movieGenre.trim());
+    }
+
+    private boolean filterByReleaseType(Map<String, Object> movie, String releaseTypeDisplayName) {
+        if (releaseTypeDisplayName == null || releaseTypeDisplayName.trim().isEmpty()) {
+            return true;
+        }
+
+        String releaseDateStr = (String) movie.get("openDt");
+        LocalDate releaseDate;
+        try {
+            releaseDate = LocalDate.parse(releaseDateStr, DateTimeFormatter.BASIC_ISO_DATE);
+        } catch (Exception e) {
+            return false; // 날짜 형식이 잘못된 경우 필터링에서 제외
+        }
+
+        LocalDate cutoffDate = LocalDate.now().minusYears(1);
+
+        // fromDisplayName 메서드를 사용하여 ReleaseType 찾기
+        Optional<ReleaseType> releaseTypeOptional = ReleaseType.fromDisplayName(releaseTypeDisplayName);
+        if (!releaseTypeOptional.isPresent()) {
+            return false;
+        }
+
+        ReleaseType releaseType = releaseTypeOptional.get();
+
+        return switch (releaseType) {
+            case RECENT_RELEASE -> releaseDate.isAfter(cutoffDate);
+            case CLASSIC -> releaseDate.isBefore(cutoffDate);
+        };
+    }
+
+    private boolean filterByLanguage(Map<String, Object> movie, String language) {
+        String movieLanguage = (String) movie.get("repNationNm");
+        return language == null || language.trim().equalsIgnoreCase(movieLanguage.trim());
+    }
+
+    private MovieResponse convertToMovieResponse(Map<String, Object> movie) {
+        // Map에서 각 필드를 추출
+        String id = (String) movie.get("movieCd");
+        String movieName = (String) movie.get("movieNm");
+        String genre = (String) movie.get("genreAlt");
+        String director = (String) movie.get("director");
+        String productionYear = (String) movie.get("prdtYear");
+        String actor = (String) movie.get("actor");
+        String audit = (String) movie.get("audits");
+        String rank = (String) movie.get("rank");
+        Integer sales = (Integer) movie.get("sales");
+        String classGrade = (String) movie.get("classGrade");
+        Integer runtime;
+        try {
+            runtime = Integer.valueOf((String) movie.get("runtime"));
+        } catch (NumberFormatException e) {
+            runtime = null; // 런타임 형식이 잘못된 경우 null 설정
+        }
+
+        // openDt는 LocalDate로 변환
+        LocalDate releaseDate;
+        try {
+            releaseDate = LocalDate.parse((String) movie.get("openDt"), DateTimeFormatter.BASIC_ISO_DATE);
+        } catch (Exception e) {
+            releaseDate = null; // 날짜 형식이 잘못된 경우 null 설정
+        }
+
+        String country = (String) movie.get("repNationNm");
+
+        return MovieResponse.builder()
+                .id(id)
+                .movieName(movieName)
+                .genre(genre)
+                .director(director)
+                .productionYear(productionYear)
+                .actor(actor)
+                .audit(audit)
+                .rank(rank)
+                .sales(sales)
+                .classGrade(classGrade)
+                .runtime(runtime)
+                .releaseDate(releaseDate)
+                .country(country)
+                .build();
+    }
 }
+
