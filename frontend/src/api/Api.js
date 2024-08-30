@@ -106,3 +106,16 @@ axios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+export const fetchMovies = async (genre, releaseType, country) => {
+  try {
+    const response = await axios.post("http://localhost:5000/api/movies", {
+      genre: genre || "",
+      releaseType: releaseType || "",
+      country: country || "",
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch movies");
+  }
+};
