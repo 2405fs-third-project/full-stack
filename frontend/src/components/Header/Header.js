@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import "./Header.css";
+import React, { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoPersonCircleOutline } from "react-icons/io5";
-import { apiUrl } from "../../api/Api";
+import { useNavigate } from "react-router-dom";
+// import { apiUrl } from "../../api/Api";
+import "./Header.css";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -24,13 +24,27 @@ const Header = () => {
     if (!searchQuery) return;
 
     try {
-      const response = await axios.get(`${apiUrl}/movies/search`, {
-        params: { searchQuery },
-      });
+      // KOFIC API 호출
+      const response = await axios.get(
+        `http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json`,
+        {
+          params: {
+            key: '82ca741a2844c5c180a208137bb92bd7',
+            movieNm: searchQuery,
+          },
+        }
+      );
 
       if (response.status === 200) {
-        setSearchResults(response.data);
-        console.log("검색 결과:", response.data);
+        const results = response.data.movieListResult.movieList;
+
+        if (results.length > 0) {
+          setSearchResults(results);
+          console.log("검색 결과:", results);
+        } else {
+          setSearchResults([]);
+          console.log("검색 결과가 없습니다.");
+        }
       } else {
         console.error("검색 중 오류 발생:", response.status);
       }
@@ -39,21 +53,24 @@ const Header = () => {
     }
     setSearchQuery("");
   };
-  
+
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSearch(e);
     }
   };
 
-  const handleResultClick = (movieId) => {
-    navigate(`/movies/${movieId}`);
+  const handleResultClick = (movieCd) => {
+    navigate(`/movies/${movieCd}`);
     setSearchResults([]);
   };
 
   const handleClickOutside = (event) => {
-    // 검색창 외부 클릭 시 검색 결과를 초기화
-    if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {
+    if (
+      searchResultsRef.current &&
+      !searchResultsRef.current.contains(event.target)
+    ) {
       setSearchResults([]);
     }
   };
@@ -96,16 +113,18 @@ const Header = () => {
           회원가입
         </div>
       </div>
-
+      
       {searchResults.length > 0 && (
         <div className="search_results" ref={searchResultsRef}>
           {searchResults.map((result) => (
             <div
-              key={result.id}
+              key={result.movieCd}
               className="search_result_item"
-              onClick={() => handleResultClick(result.id)} // 클릭 시 영화 상세 페이지로 이동
+              onClick={() => handleResultClick(result.movieCd)} // 클릭 시 영화 상세 페이지로 이동
             >
-              {result.movieName} - {result.movieGenre} - {result.movieDirector}
+              <strong>{result.movieNm}</strong> <br />
+              개봉일: {result.openDt} <br />
+              감독: {result.directors.map(d => d.peopleNm).join(", ")}
             </div>
           ))}
         </div>

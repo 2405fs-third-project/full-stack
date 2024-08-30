@@ -19,7 +19,11 @@ const fetchAnonymousBoard = async () => {
 const fetchCurrentMovies = async () => {
   try {
     const response = await axios.get(`${apiUrl}/movies/current`);
-    return response.data.slice(0, 7);
+    console.log("API 응답 데이터:", response.data);
+
+    const movies = response.data.dailyBoxOfficeList || [];
+
+    return movies.slice(0, 7);
   } catch (error) {
     console.error("현재상영작 데이터를 가져오는 중 오류 발생:", error);
     return [];
@@ -73,7 +77,7 @@ const MainForm = () => {
       <div className="board1">
         <h2>게시판</h2>
         <div className="box1">
-          {anonymousBoard.map((post, index) => (
+          {anonymousBoard.map((post) => (
             <div key={post.id} onClick={() => handlePostClick(post.id)}>
               {post.postName}
             </div>
@@ -84,9 +88,9 @@ const MainForm = () => {
         <div className="board2">
           <h3>현재 상영작</h3>
           <div className="box2">
-            {currentMovies.map((movie, index) => (
+            {currentMovies.map((movie) => (
               <div key={movie.id} onClick={() => handleMovieClick(movie.id)}>
-                {index + 1}. {movie.movieName}
+                 {movie.movieNm}
               </div>
             ))}
           </div>

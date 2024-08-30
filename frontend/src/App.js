@@ -10,6 +10,8 @@ import { PostProvider } from "./components/context/PostContext";
 import Layout from "./components/Layout";
 import Login from "./components/Login/Login";
 import MainForm from "./components/Main/MainForm";
+import Movie from "./components/Movie/Movie";
+import Recommendation from "./components/Movie/Recommendation";
 import SideBar from "./components/SideBar/SideBar";
 import { AuthProvider } from "./components/context/AuthContext";
 
@@ -28,6 +30,8 @@ function App() {
               <Route path="/post/:postId" element={<PostDetail />} />
               <Route path="/" element={<MainForm />} />
               <Route path="login" element={<Login />} />
+              <Route path="/movie" element={<Movie />} />
+              <Route path="/recommendation" element={<Recommendation />} />
             </Routes>
           </Layout>
         </Router>
