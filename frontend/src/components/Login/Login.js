@@ -71,7 +71,7 @@ const Login = () => {
           (response.headers["authorization"] || "").split(" ")[1]
         }`; // axios 기본 헤더에 토큰 설정
 
-        navigate("/");
+        navigate("/mypage");
       } else {
         alert(response.data);
         setErrorMessage(response.data.message || "로그인에 실패했습니다.");
