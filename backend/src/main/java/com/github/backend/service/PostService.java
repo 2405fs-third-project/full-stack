@@ -62,10 +62,15 @@ public class PostService {
         }
     }
 
-    @Transactional //게시글 확인
+    @Transactional // 게시글 확인
     public Optional<PostResponse> getPostById(Integer id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Null check for views
+        if (post.getViews() == null) {
+            post.setViews(0);
+        }
 
         post.setViews(post.getViews() + 1); // 조회수 증가
         postRepository.save(post); // 변경사항 저장

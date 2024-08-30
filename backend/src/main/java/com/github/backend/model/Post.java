@@ -39,18 +39,19 @@ public class Post {
     private String postContent;
 
     @Column(name = "views")
-    private Integer views;
+    private Integer views = 0; // 기본값 설정
 
     @Column(name = "likes")
-    private Integer likes;
+    private Integer likes = 0; // 기본값 설정
 
-    @Column(name = "post_create")
-    private LocalDateTime postCreate;
+    @Column(name = "post_create", nullable = false)
+    private LocalDateTime postCreate = LocalDateTime.now();
 
     @Column(name = "type")
     private String type;
 
     @Version
     @Column(name = "version")
-    private Long version;
+    private Long version = 0L;
+
 }
