@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
@@ -9,7 +9,8 @@ import { apiUrl } from "../../api/Api";
 const Header = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]); // 검색 결과 상태 추가
+  const [searchResults, setSearchResults] = useState([]);
+  const searchResultsRef = useRef(null);
 
   const handleLoginClick = () => {
     navigate("/login");
@@ -28,7 +29,7 @@ const Header = () => {
       });
 
       if (response.status === 200) {
-        setSearchResults(response.data); // 검색 결과 상태 업데이트
+        setSearchResults(response.data);
         console.log("검색 결과:", response.data);
       } else {
         console.error("검색 중 오류 발생:", response.status);
@@ -36,9 +37,9 @@ const Header = () => {
     } catch (error) {
       console.error("검색 중 오류 발생", error);
     }
-    setSearchQuery(""); // 검색 후 입력 값 초기화
+    setSearchQuery("");
   };
-
+  
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       handleSearch(e);
@@ -46,9 +47,24 @@ const Header = () => {
   };
 
   const handleResultClick = (movieId) => {
-    // 영화 상세 페이지로 이동
     navigate(`/movies/${movieId}`);
+    setSearchResults([]);
   };
+
+  const handleClickOutside = (event) => {
+    // 검색창 외부 클릭 시 검색 결과를 초기화
+    if (searchResultsRef.current && !searchResultsRef.current.contains(event.target)) {
+      setSearchResults([]);
+    }
+  };
+
+  useEffect(() => {
+    // 문서 전체에 클릭 이벤트를 추가하여 외부 클릭을 감지
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="nav_wrap">
@@ -82,7 +98,7 @@ const Header = () => {
       </div>
 
       {searchResults.length > 0 && (
-        <div className="search_results">
+        <div className="search_results" ref={searchResultsRef}>
           {searchResults.map((result) => (
             <div
               key={result.id}

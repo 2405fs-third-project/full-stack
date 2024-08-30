@@ -9,8 +9,12 @@ const Layout = ({ children }) => {
 
   return (
     <div>
-      {!hideHeaderAndSidebar && <SideBar />}
-      {!hideHeaderAndSidebar && <Header />}
+      {!hideHeaderAndSidebar && (
+        <>
+          <SideBar />
+          <Header />
+        </>
+      )}
       <div>{children}</div>
     </div>
   );
