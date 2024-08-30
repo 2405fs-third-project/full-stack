@@ -1,25 +1,12 @@
 package com.github.backend.service;
 
-import com.github.backend.dto.AddMovieRequest;
+
 import com.github.backend.dto.MovieRecommendationRequest;
 import com.github.backend.dto.MovieResponse;
-import com.github.backend.model.Movie;
-import com.github.backend.model.QMovie;
-import com.github.backend.repository.MovieRepository;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -32,23 +19,6 @@ public class MovieService {
     private final JPAQueryFactory jpaQueryFactory;
     private final KobisService kobisService;
 
-
-    public List<Movie> searchMovies(String searchQuery) {
-        return jpaQueryFactory
-                .selectFrom(QMovie.movie)
-                .where(createSearchPredicate(searchQuery))
-                .fetch();
-    }
-
-    private BooleanExpression createSearchPredicate(String searchQuery) {
-        if (searchQuery == null || searchQuery.isEmpty()) {
-            return null;
-        }
-        return QMovie.movie.movieName.containsIgnoreCase(searchQuery)
-                .or(QMovie.movie.movieGenre.containsIgnoreCase(searchQuery))
-                .or(QMovie.movie.movieDirector.containsIgnoreCase(searchQuery))
-                .or(QMovie.movie.movieActor.containsIgnoreCase(searchQuery));
-    }
 
     @Transactional
     public List<MovieResponse> recommendMovies(MovieRecommendationRequest request) {

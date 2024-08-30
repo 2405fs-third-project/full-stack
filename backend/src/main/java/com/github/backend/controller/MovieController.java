@@ -47,9 +47,9 @@ public class MovieController {
     }
 
     @GetMapping("/search")
-    public List<Movie> searchMovies(@RequestParam String searchQuery) {
+    public List<Map<String, Object>> searchMovies(@RequestParam String searchQuery) {
         String decodedQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8);
-        return movieService.searchMovies(decodedQuery);
+        return kobisService.searchMovies(decodedQuery);
     }
 
 
