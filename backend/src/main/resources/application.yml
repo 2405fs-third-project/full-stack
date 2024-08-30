@@ -22,21 +22,15 @@ spring:
 image:
   upload:
     path: /static/img/
+  save:
+    path: /path/to/save/images/
 
 jjwt:
-  secret: ${TOKEN_SECRET_KEY}
-  expiration: ${TOKEN_EXPIRATION}
+  secret: J16DvhzB4awhvd6uPWWXIFb4AajaRDT5BhYWrhyqGOJ4
+  expiration: 1800000
 
-logging:
-  level:
-    org:
-      springframework:
-        web:
-          servlet:
-            config:
-              annotation:
-                CorsRegistry: DEBUG
-            handler:
-              CorsFilter: DEBUG
-          cors:
-            DefaultCorsProcessor: TRACE
+kobis:
+  api:
+    key: 775a62fe3322107b4f1a39f257dc7801
+    url: http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json
+    movieListUrl: http://kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json

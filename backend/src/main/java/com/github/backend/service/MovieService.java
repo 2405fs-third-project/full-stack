@@ -18,177 +18,21 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Locale.filter;
 
 @RequiredArgsConstructor
 @Service
 public class MovieService {
 
-    private final MovieRepository movieRepository;
     private final JPAQueryFactory jpaQueryFactory;
-    @Value("${image.upload.path}")
-    private String imagePath;
-
-    @Transactional(readOnly = true) //이미지 불러오기
-    public MovieResponse getMovieById(Integer id) {
-        Movie movie = movieRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
-
-        if(!"상영중".equals(movie.getMovieState())){
-            throw new IllegalArgumentException("Movie state error");
-        }
-
-        String cleanedImagePath = StringUtils.trimTrailingCharacter(imagePath, '/');
-        String moviePosterPath = StringUtils.trimLeadingCharacter(movie.getMoviePoster(), '/');
-        String fullImagePath = cleanedImagePath + "/" + moviePosterPath;
-
-        return new MovieResponse(
-                movie.getId(),
-                movie.getMovieName(),
-                movie.getMovieGenre(),
-                fullImagePath,
-                movie.getMovieDirector(),
-                movie.getRecommend(),
-                movie.getMovieActor(),
-                movie.getMovieGrade(),
-                movie.getMovieRanking(),
-                movie.getAttendance(),
-                movie.getComGrade(),
-                movie.getMovieTime(),
-                movie.getRelease(),
-                movie.getMovieState(),
-                movie.getLanguage()
-        );
-    }
-
-    @Transactional // 영화 포스터 등록
-    public Movie createMovie(AddMovieRequest addMovieRequest) {
-        // 이미지 저장
-        String posterPath = saveImage(addMovieRequest.getMoviePoster());
-
-        // Movie 엔티티 생성
-        Movie movie = new Movie();
-        movie.setMovieName(addMovieRequest.getMovieName());
-        movie.setMovieGenre(addMovieRequest.getMovieGenre());
-        movie.setMoviePoster(posterPath);
-        movie.setMovieDirector(addMovieRequest.getMovieDirector());
-        movie.setRecommend(addMovieRequest.getRecommend());
-        movie.setMovieActor(addMovieRequest.getMovieActor());
-        movie.setMovieGrade(addMovieRequest.getMovieGrade());
-        movie.setMovieRanking(addMovieRequest.getMovieRanking());
-        movie.setAttendance(addMovieRequest.getAttendance());
-        movie.setComGrade(addMovieRequest.getComGrade());
-        movie.setMovieTime(addMovieRequest.getMovieTime());
-        movie.setRelease(addMovieRequest.getRelease());
-        movie.setMovieState(addMovieRequest.getMovieState());
-
-        return movieRepository.save(movie);
-    }
-
-    private String saveImage(String imageName) {
-        if (StringUtils.isEmpty(imageName)) {
-            return null;
-        }
-
-        // 이미지 파일 저장 경로 설정 (resources/static/img)
-        File imageFile = new File(imagePath + File.separator + imageName);
-
-        // 이미지 파일이 존재하지 않으면 오류 처리
-        if (!imageFile.exists()) {
-            throw new RuntimeException("Image file not found: " + imageName);
-        }
-
-        try {
-            // 이미지 파일을 src/main/resources/static/img 디렉토리로 복사
-            File destinationFile=new File("src/main/resources/static/img/" + imageName);
-            Files.copy(imageFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return"/img/" + imageName;  // 웹에서 접근할 경로
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save image file: " + imageName, e);
-        }
-    }
-
-    @Transactional //영화 추천 기능
-    public List<MovieResponse> recommendMovies(MovieRecommendationRequest request) {
-        Date releasePreference = request.getRelease();
-
-        return movieRepository.findAll().stream()
-                .filter(movie -> filterByGenre(movie, request.getMovieGenre()))
-                .filter(movie -> filterByRuntime(movie, request.getMovieTime()))
-                .filter(movie -> filterByReleaseType(movie, request.getReleaseType(), releasePreference))
-                .filter(movie -> filterByLanguage(movie, request.getLanguage()))
-                .map(this::convertToMovieResponse)
-                .collect(Collectors.toList());
-    }
-
-    private boolean filterByReleaseType(Movie movie, String releaseType, Date releasePreference) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2024, Calendar.JANUARY, 1, 0, 0, 0);
-        Date cutoffDate = calendar.getTime();
-
-        Date releaseDate = movie.getRelease();
-
-        if (releaseType == null || releaseDate == null) {
-            return true;
-        }
-
-        if ("최근 개봉 영화".equalsIgnoreCase(releaseType)) {
-            return releaseDate.after(cutoffDate);
-        } else if ("클래식 영화".equalsIgnoreCase(releaseType)) {
-            return releaseDate.before(cutoffDate);
-        }
-        return false;
-    }
-
-    private boolean filterByGenre(Movie movie, String genre) {
-        return genre == null || genre.equalsIgnoreCase(movie.getMovieGenre());
-    }
-
-    private boolean filterByRuntime(Movie movie, String runtime) {
-        if (runtime == null) return true;
-        int movieTime = movie.getMovieTime();
-        switch (runtime) {
-            case "100~150분":
-                return movieTime >= 100 && movieTime <= 150;
-            case "150~200분":
-                return movieTime > 150 && movieTime <= 200;
-            case "200분 이상":
-                return movieTime > 200;
-            default:
-                return false;
-        }
-    }
-
-    private boolean filterByLanguage(Movie movie, String language) {
-        String movieLanguage = movie.getLanguage(); // movie.getLanguage()를 사용
-        return language == null || (movieLanguage != null && language.equalsIgnoreCase(movieLanguage.trim()));
-    }
+    private final KobisService kobisService;
 
 
-    private MovieResponse convertToMovieResponse(Movie movie) {
-        return MovieResponse.builder()
-                .id(movie.getId())
-                .movieName(movie.getMovieName())
-                .movieGenre(movie.getMovieGenre())
-                .moviePoster("/img/" + movie.getMoviePoster())  // 이미지 경로 설정
-                .movieDirector(movie.getMovieDirector())
-                .recommend(movie.getRecommend())
-                .movieActor(movie.getMovieActor())
-                .movieGrade(movie.getMovieGrade())
-                .movieRanking(movie.getMovieRanking())
-                .attendance(movie.getAttendance())
-                .comGrade(movie.getComGrade())
-                .movieTime(movie.getMovieTime())
-                .release(movie.getRelease())
-                .movieState(movie.getMovieState())
-                .language(movie.getLanguage())
-                .build();
-    }
     public List<Movie> searchMovies(String searchQuery) {
         return jpaQueryFactory
                 .selectFrom(QMovie.movie)
@@ -205,4 +49,102 @@ public class MovieService {
                 .or(QMovie.movie.movieDirector.containsIgnoreCase(searchQuery))
                 .or(QMovie.movie.movieActor.containsIgnoreCase(searchQuery));
     }
+
+    @Transactional
+    public List<MovieResponse> recommendMovies(MovieRecommendationRequest request) {
+        List<Map<String, Object>> movies = kobisService.getAllMovies();
+
+        return movies.stream()
+                .filter(movie -> filterByGenre(movie, request.getMovieGenre()))
+                .filter(movie -> filterByReleaseType(movie, request.getReleaseType()))
+                .filter(movie -> filterByLanguage(movie, request.getLanguage()))
+                .map(this::convertToMovieResponse)
+                .collect(Collectors.toList());
+    }
+
+    private boolean filterByGenre(Map<String, Object> movie, String genre) {
+        String movieGenre = (String) movie.get("genreAlt");
+        return genre == null || genre.trim().equalsIgnoreCase(movieGenre.trim());
+    }
+
+    private boolean filterByReleaseType(Map<String, Object> movie, String releaseTypeDisplayName) {
+        if (releaseTypeDisplayName == null || releaseTypeDisplayName.trim().isEmpty()) {
+            return true;
+        }
+
+        String releaseDateStr = (String) movie.get("openDt");
+        LocalDate releaseDate;
+        try {
+            releaseDate = LocalDate.parse(releaseDateStr, DateTimeFormatter.BASIC_ISO_DATE);
+        } catch (Exception e) {
+            return false; // 날짜 형식이 잘못된 경우 필터링에서 제외
+        }
+
+        LocalDate cutoffDate = LocalDate.now().minusYears(1);
+
+        // fromDisplayName 메서드를 사용하여 ReleaseType 찾기
+        Optional<ReleaseType> releaseTypeOptional = ReleaseType.fromDisplayName(releaseTypeDisplayName);
+        if (!releaseTypeOptional.isPresent()) {
+            return false;
+        }
+
+        ReleaseType releaseType = releaseTypeOptional.get();
+
+        return switch (releaseType) {
+            case RECENT_RELEASE -> releaseDate.isAfter(cutoffDate);
+            case CLASSIC -> releaseDate.isBefore(cutoffDate);
+        };
+    }
+
+    private boolean filterByLanguage(Map<String, Object> movie, String language) {
+        String movieLanguage = (String) movie.get("repNationNm");
+        return language == null || language.trim().equalsIgnoreCase(movieLanguage.trim());
+    }
+
+    private MovieResponse convertToMovieResponse(Map<String, Object> movie) {
+        // Map에서 각 필드를 추출
+        String id = (String) movie.get("movieCd");
+        String movieName = (String) movie.get("movieNm");
+        String genre = (String) movie.get("genreAlt");
+        String director = (String) movie.get("director");
+        String productionYear = (String) movie.get("prdtYear");
+        String actor = (String) movie.get("actor");
+        String audit = (String) movie.get("audits");
+        String rank = (String) movie.get("rank");
+        Integer sales = (Integer) movie.get("sales");
+        String classGrade = (String) movie.get("classGrade");
+        Integer runtime;
+        try {
+            runtime = Integer.valueOf((String) movie.get("runtime"));
+        } catch (NumberFormatException e) {
+            runtime = null; // 런타임 형식이 잘못된 경우 null 설정
+        }
+
+        // openDt는 LocalDate로 변환
+        LocalDate releaseDate;
+        try {
+            releaseDate = LocalDate.parse((String) movie.get("openDt"), DateTimeFormatter.BASIC_ISO_DATE);
+        } catch (Exception e) {
+            releaseDate = null; // 날짜 형식이 잘못된 경우 null 설정
+        }
+
+        String country = (String) movie.get("repNationNm");
+
+        return MovieResponse.builder()
+                .id(id)
+                .movieName(movieName)
+                .genre(genre)
+                .director(director)
+                .productionYear(productionYear)
+                .actor(actor)
+                .audit(audit)
+                .rank(rank)
+                .sales(sales)
+                .classGrade(classGrade)
+                .runtime(runtime)
+                .releaseDate(releaseDate)
+                .country(country)
+                .build();
+    }
 }
+

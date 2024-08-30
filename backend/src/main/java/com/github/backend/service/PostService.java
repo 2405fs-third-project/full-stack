@@ -9,12 +9,17 @@ import com.github.backend.repository.BoardRepository;
 import com.github.backend.repository.PostRepository;
 import com.github.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PostService {
@@ -25,7 +30,7 @@ public class PostService {
     private final UserService userService;
 
 
-    @Transactional //게시글 작성
+    @Transactional // 게시글 작성 : 낙관적
     public Post createPost(AddPostRequest addPostRequest) {
         // 요청에서 boardId를 동적으로 받아서 해당 게시판을 조회
         Board board = boardRepository.findById(addPostRequest.getBoardId())
@@ -36,13 +41,11 @@ public class PostService {
 
         Integer postpt = user.getPoint() + 10;
         String userId = user.getUserId();
-        userService.updateUserRole(postpt,userId);
-
+        userService.updateUserRole(postpt, userId);
 
         Post post = new Post();
         post.setBoard(board); // 동적으로 조회한 게시판을 설정
-        post.setUser(userRepository.findById(addPostRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found")));
+        post.setUser(user); // 중복 호출 제거
         post.setPostNumber(addPostRequest.getPostNumber());
         post.setPostName(addPostRequest.getPostName());
         post.setPostContent(addPostRequest.getPostContent());
@@ -50,11 +53,17 @@ public class PostService {
         post.setLikes(addPostRequest.getLikes());
         post.setType(addPostRequest.getType());
         post.setPostCreate(LocalDateTime.now());
-        return postRepository.save(post);
+
+        try {
+            return postRepository.save(post);
+        } catch (OptimisticLockingFailureException e) {
+            log.error("Optimistic locking failure while creating post: {}", e.getMessage());
+            throw new RuntimeException("Failed to create post due to optimistic locking", e);
+        }
     }
 
-    @Transactional(readOnly = true) //게시글 확인
-    public Optional<PostResponse> getPostById(Integer id) { // 게시글 확인
+    @Transactional //게시글 확인
+    public Optional<PostResponse> getPostById(Integer id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -97,33 +106,24 @@ public class PostService {
         ));
     }
 
-    @Transactional // 게시글 삭제
+    @Transactional // 게시글 삭제 : 비관적
     public void deletePost(Integer id) {
-        // 게시글 조회
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        // 사용자 조회
         User user = post.getUser();
 
-        // 포인트 10점 감점 (포인트가 0보다 작아지지 않도록 조건 처리)
         if (user.getPoint() >= 10) {
-            Integer postpt = user.getPoint() - 10;
-            String userId = user.getUserId();
-            userService.updateUserRole(postpt,userId);
+            user.setPoint(user.getPoint() - 10);
         } else {
             user.setPoint(0);
-            String userId = user.getUserId();
-            userService.updateUserRole(0,userId); // 포인트가 0보다 작아질 경우 0으로 설정
         }
 
-        userRepository.save(user); // 업데이트된 포인트 정보 저장
-
-        // 게시글 삭제
+        userRepository.save(user);
         postRepository.delete(post);
     }
 
-    @Transactional //좋아요 증가
+    @Transactional //좋아요 증가 : 비관적
     public Optional<PostResponse> increaseLikes(Integer id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
 
@@ -141,5 +141,24 @@ public class PostService {
                 post.getUser().getNickname(),
                 post.getType()
         ));
+    }
+
+    @Transactional(readOnly = true) // 게시글 목록 조회
+    public List<PostResponse> getAllPosts() {
+        List<Post> posts = postRepository.findAll();
+
+        return posts.stream()
+                .map(post -> new PostResponse(
+                        post.getUser().getId(),
+                        post.getPostNumber(),
+                        post.getPostName(),
+                        post.getPostContent(),
+                        post.getViews(),
+                        post.getLikes(),
+                        post.getPostCreate(),
+                        post.getUser().getNickname(),
+                        post.getType()
+                ))
+                .collect(Collectors.toList());
     }
 }

@@ -49,4 +49,8 @@ public class Post {
 
     @Column(name = "type")
     private String type;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 }

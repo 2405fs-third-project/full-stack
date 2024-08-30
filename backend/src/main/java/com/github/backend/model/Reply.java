@@ -31,4 +31,7 @@ public class Reply {
 
     @Column(name = "reply_create", nullable = false)
     private LocalDateTime replyCreate;
+
+    @Version
+    private Long version;
 }
