@@ -74,7 +74,7 @@ export const login = async (credentials) => {
     const response = await axios.post(`${apiUrl}/user/login`, credentials);
     const token = response.data.token;
     if (token) {
-      localStorage.setItem("token", token); // 토큰 저장
+      localStorage.setItem("token", token);
     }
     return response.data;
   } catch (error) {

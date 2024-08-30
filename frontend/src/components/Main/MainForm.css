@@ -16,7 +16,7 @@ body {
   min-height: calc(100vh - 150px);
   padding-top: 100px;
   margin-left: 100px;
-  overflow: auto; 
+  overflow: auto;
 }
 
 .board1 {
@@ -57,8 +57,6 @@ body {
   margin-right: 20px;
 }
 
-
-
 .box1, .box2, .box3 {
   background-color: #111111;
   border-radius: 10px;
@@ -68,8 +66,88 @@ body {
 .board1 h2, .board2 h3, .board3 h3 {
   margin: 0;
   color: white;
-  cursor: pointer;
 }
+
+.board1 .box1 {
+  padding: 10px;
+  background-color: #111111;
+  border-radius: 10px;
+  color: white;
+  max-width: 100%;
+  line-height: 1.2;
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    cursor: pointer;
+}
+
+.box1 div {
+  font-size: 20px;
+  border-bottom: 2px solid #373737;
+}
+
+.board1 .box1 div:last-child {
+  border-bottom: none;
+}
+
+.board1 .box1 div {
+  padding: 7px 0; /* 위아래에 10px의 패딩 추가 */
+  border-bottom: 1px solid #333; /* 항목 간 경계선 */
+}
+
+.board2 .box2 {
+  padding: 10px;
+  background-color: #111111;
+  border-radius: 10px;
+  color: white;
+  max-width: 100%;
+  line-height: 1.2;
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    cursor: pointer;
+}
+
+.box2 div {
+  font-size: 20px;
+  border-bottom: 2px solid #373737;
+}
+
+.board2 .box2 div:last-child {
+  border-bottom: none;
+}
+
+.board2 .box2 div {
+  padding: 7px 0; /* 위아래에 10px의 패딩 추가 */
+  border-bottom: 1px solid #333; /* 항목 간 경계선 */
+}
+
+
+.board3 .box3 {
+  padding: 10px;
+  background-color: #111111;
+  border-radius: 10px;
+  color: white;
+  max-width: 100%;
+  line-height: 1.2;
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    cursor: pointer;
+}
+
+.box3 div {
+  font-size: 20px;
+  border-bottom: 2px solid #373737;
+}
+
+.board3 .box3 div:last-child {
+  border-bottom: none;
+}
+
+.board3 .box3 div {
+  padding: 7px 0; /* 위아래에 10px의 패딩 추가 */
+  border-bottom: 1px solid #333; /* 항목 간 경계선 */
+}
+
+
 
 
 
