@@ -1,15 +1,18 @@
 package com.github.backend.service;
 
-import com.github.backend.dto.BoxOfficeResult;
-import com.github.backend.dto.DailyBoxOffice;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
+import com.github.backend.dto.BoxOfficeResult;
+import com.github.backend.dto.DailyBoxOffice;
 
 @Service
 public class KobisService {
@@ -22,7 +25,8 @@ public class KobisService {
 
     @Value("${kobis.api.movieListUrl}")
     private String movieListUrl;
-
+    private String movieDBResult = "movieListResult";
+    private String movieDBList = "movieList";
     private final RestTemplate restTemplate;
 
     public KobisService(RestTemplate restTemplate) {
@@ -87,13 +91,52 @@ public class KobisService {
                 throw new RuntimeException("API 응답이 null입니다.");
             }
 
-            Map<String, Object> movieListResult = (Map<String, Object>) response.get("movieListResult");
+            Map<String, Object> movieListResult = (Map<String, Object>) response.get(movieDBResult);
             if (movieListResult != null) {
-                return (List<Map<String, Object>>) movieListResult.get("movieList");
+                return (List<Map<String, Object>>) movieListResult.get(movieDBList);
             }
             return List.of();
         } catch (Exception e) {
             throw new RuntimeException("영화 목록 정보를 가져오는 데 실패했습니다.", e);
+        }
+    }
+
+    public List<Map<String, Object>> searchMovies(String searchQuery) {
+        String movieNmurl = String.format("%s?key=%s&movieNm=%s", movieListUrl, apiKey, searchQuery);
+        String directorNmurl = String.format("%s?key=%s&directorNm=%s", movieListUrl, apiKey, searchQuery);
+        try {
+            Map<String, Object> movieNmResponse = restTemplate.getForObject(movieNmurl, Map.class);
+            Map<String, Object> directorNmResponse = restTemplate.getForObject(directorNmurl, Map.class);
+
+            Map<String, Object> combinedResponse = new HashMap<>();
+
+            if (movieNmResponse != null) {
+                combinedResponse.putAll(movieNmResponse);
+            }
+
+            if (directorNmResponse != null) {
+                combinedResponse.putAll(directorNmResponse);
+            }
+
+        if (combinedResponse == null || combinedResponse.isEmpty()) {
+            throw new RuntimeException(MessageService.API_RESPONCE_FAILED.getMessage());
+        }
+
+        Map<String, Object> movieListResult = (Map<String, Object>) combinedResponse.get(movieDBResult);
+            if (movieListResult != null) {
+                Object movieDBListObject = movieListResult.get(movieDBList);
+                if (movieDBListObject instanceof List) {
+                    List<?> list = (List<?>) movieDBListObject;
+                    if (list.isEmpty()) {
+                        return List.of(Map.of("ERROR", MessageService.CANNOT_FIND_MOVIE.getMessage())); // 빈 리스트
+                    }
+                    return (List<Map<String, Object>>) list;
+                }
+            }
+        return List.of(Map.of("ERROR",MessageService.CANNOT_FIND_MOVIE.getMessage()));
+        }catch(Exception e)
+        {
+        throw new RuntimeException(MessageService.GET_MOVIE_LIST_FAILED.getMessage(), e);
         }
     }
 
