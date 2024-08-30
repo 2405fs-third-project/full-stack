@@ -166,4 +166,9 @@ public class PostService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public List<Post> getPostByBoardId(Integer boardId) {
+        return postRepository.findByBoardId(boardId);
+    }
 }
