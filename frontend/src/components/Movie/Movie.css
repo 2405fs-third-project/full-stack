@@ -1,15 +1,16 @@
+body {
+  background-color: #1e1f21;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
 .main {
   margin: 50px;
 }
 
-.title {
-  font-size: larger;
-  font-weight: bold;
-}
-
 .question {
   font-size: 27px;
-  font-weight: 600;
+  font-weight: 500;
   margin: 60px 0px 20px 0px;
 }
 

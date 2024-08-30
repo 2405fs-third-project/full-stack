@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "./Movie.css";
 
 const Movie = () => {
@@ -54,29 +55,38 @@ const Movie = () => {
       (_, index) => selectedAnswers[2][index]
     );
 
+    console.log("선택된 장르:", selectedGenre);
+    console.log("선택된 개봉 유형:", selectedReleaseType);
+    console.log("선택된 국가:", selectedCountry);
+
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/movies", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          genre: selectedGenre || "",
-          releaseType: selectedReleaseType || "",
-          country: selectedCountry || "",
-        }),
-      });
+      const requestPayload = {
+        movieGenre: selectedGenre || "",
+        releaseType: selectedReleaseType || "",
+        language: selectedCountry || "",
+      };
 
-      if (!response.ok) {
+      console.log("서버에 보낼 요청 데이터:", requestPayload);
+
+      const response = await axios.post(
+        "http://13.125.98.63:8080/api/movies/recommend",
+        requestPayload
+      );
+
+      // 응답 상태와 데이터 로그 출력
+      console.log("서버 응답 상태:", response.status);
+      console.log("서버 응답 데이터:", response.data);
+
+      if (response.status !== 200) {
         throw new Error("Network response was not ok.");
       }
-
-      const data = await response.json();
-      setMovies(data.movies || []);
+      setMovies(response.data || []); // 응답 데이터가 직접 영화 목록일 경우
+      // API에서 받은 데이터를 movies에 저장
     } catch (error) {
+      console.error("영화 데이터를 가져오는 데 실패했습니다:", error);
       setError("영화 데이터를 가져오는 데 실패했습니다.");
     } finally {
       setLoading(false);
@@ -85,7 +95,6 @@ const Movie = () => {
 
   return (
     <div className="mainpage">
-      <div className="title">영화 추천 페이지</div>
       <div className="main">
         {questions.map((question) => (
           <div key={question.id} className="question-group">
@@ -116,8 +125,7 @@ const Movie = () => {
             <ul>
               {movies.map((movie, index) => (
                 <li key={index}>
-                  {movie.movieName} - {movie.productionYear} (
-                  {movie.releaseDate}) - {movie.country}
+                  {movie.movieName} - {movie.genre} ({movie.country})
                 </li>
               ))}
             </ul>
