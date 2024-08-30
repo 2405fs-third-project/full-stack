@@ -36,11 +36,42 @@
     "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
 }
 
+.search_results {
+  position: absolute;
+  box-sizing: border-box;
+  font-size: 20px;
+  top: 100%; /* input 창 바로 아래에 검색 결과가 위치하도록 설정 */
+  left: 10px;
+  right: 0;
+  background-color: rgba(41, 42, 46, 0.7); /* 배경색에 투명도 추가 */
+  /* padding: 10px; */
+  border: 0 solid #ccc;
+  max-height: 300px; /* 최대 높이 지정 */
+  overflow-y: auto; /* 검색 결과가 많을 경우 스크롤 가능 */
+  backdrop-filter: blur(5px); 
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000; /* 검색 결과가 다른 요소 위에 표시되도록 설정 */
+}
+
+.search_result_item {
+  padding: 10px;
+  border-bottom: 0px solid #eee;
+  cursor: pointer;
+}
+
+.search_result_item:hover {
+  background-color: rgba(41, 42, 46, 0.7); /* 배경색에 투명도 추가 */
+  backdrop-filter: blur(5px);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  
+}
+
 .nav_center {
   display: flex;
   align-items: center;
   margin-left: 30px;
   flex-grow: 1;
+  position: relative;
 }
 
 .nav_right {

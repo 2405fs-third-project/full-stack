@@ -1,16 +1,38 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../../api/Api";
 import "./MainForm.css";
 
-const API_URL = "http://localhost:8080/api/posts";
-
-const fetchBoardData = async (boardType) => {
+// 게시판
+const fetchAnonymousBoard = async () => {
   try {
-    const response = await axios.get(`${API_URL}/${boardType}`);
-    return response.data;
+    const response = await axios.get(`${apiUrl}/posts/all`);
+    return response.data.slice(0, 7);
   } catch (error) {
-    console.error(`${boardType} 데이터를 가져오는 중 오류 발생:`, error);
+    console.error("게시글 데이터를 가져오는 중 오류 발생:", error);
+    return [];
+  }
+};
+
+// 현재 상영작
+const fetchCurrentMovies = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/movies/current`);
+    return response.data.slice(0, 7);
+  } catch (error) {
+    console.error("현재상영작 데이터를 가져오는 중 오류 발생:", error);
+    return [];
+  }
+};
+
+// 추천 영화
+const fetchRecommendedMovies = async () => {
+  try {
+    const response = await axios.post(`${apiUrl}/movies/recommend`, {}); // 빈 객체로 POST 요청
+    return response.data.slice(0, 7);
+  } catch (error) {
+    console.error("추천 영화 데이터를 가져오는 중 오류 발생:", error);
     return [];
   }
 };
@@ -23,46 +45,59 @@ const MainForm = () => {
   const [currentMovies, setCurrentMovies] = useState([]);
   const [recommendedMovies, setRecommendedMovies] = useState([]);
 
-  // 컴포넌트가 마운트될 때 데이터를 가져옴
   useEffect(() => {
-    fetchBoardData("anonymousBoard").then((data) => setAnonymousBoard(data));
-    fetchBoardData("currentMovies").then((data) => setCurrentMovies(data));
-    fetchBoardData("recommendedMovies").then((data) =>
-      setRecommendedMovies(data)
-    );
+    fetchAnonymousBoard().then((data) => {
+      console.log("게시판 데이터:", data);
+      setAnonymousBoard(data);
+    });
+    fetchCurrentMovies().then((data) => {
+      console.log("현재 상영작 데이터:", data);
+      setCurrentMovies(data);
+    });
+    fetchRecommendedMovies().then((data) => {
+      console.log("추천 영화 데이터:", data);
+      setRecommendedMovies(data);
+    });
   }, []);
 
-  const handleClick = {
-    // 일단 login으로 연결
-    community: () => navigate("/login"),
-    movie: () => navigate("/login"),
-    recommend: () => navigate("/login"),
+  const handlePostClick = (postId) => {
+    navigate(`/post/${postId}`);
+  };
+
+  const handleMovieClick = (movieId) => {
+    navigate(`/movie/${movieId}`);
   };
 
   return (
     <div className="main_wrap">
       <div className="board1">
-        <h2 onClick={handleClick.community}>익명 게시판</h2>
+        <h2>게시판</h2>
         <div className="box1">
-          {anonymousBoard.map((post) => (
-            <div key={post.id}>{post.title}</div>
+          {anonymousBoard.map((post, index) => (
+            <div key={post.id} onClick={() => handlePostClick(post.id)}>
+              {post.postName}
+            </div>
           ))}
         </div>
       </div>
       <div className="board_container">
         <div className="board2">
-          <h3 onClick={handleClick.movie}>현재상영작</h3>
+          <h3>현재 상영작</h3>
           <div className="box2">
-            {currentMovies.map((movie) => (
-              <div key={movie.id}>{movie.title}</div>
+            {currentMovies.map((movie, index) => (
+              <div key={movie.id} onClick={() => handleMovieClick(movie.id)}>
+                {index + 1}. {movie.movieName}
+              </div>
             ))}
           </div>
         </div>
         <div className="board3">
-          <h3 onClick={handleClick.recommend}>영화 추천</h3>
+          <h3>추천 영화</h3>
           <div className="box3">
             {recommendedMovies.map((movie) => (
-              <div key={movie.id}>{movie.title}</div>
+              <div key={movie.id} onClick={() => handleMovieClick(movie.id)}>
+                {movie.movieName}
+              </div>
             ))}
           </div>
         </div>
