@@ -10,10 +10,10 @@ import { PostProvider } from "./components/context/PostContext";
 import Layout from "./components/Layout";
 import Login from "./components/Login/Login";
 import MainForm from "./components/Main/MainForm";
+import Movie from "./components/Movie/Movie";
+import Recommendation from "./components/Movie/Recommendation";
 import SideBar from "./components/SideBar/SideBar";
 import { AuthProvider } from "./components/context/AuthContext";
-import Recommendation from "./components/Main/Recommendation";
-import Movie from "./components/Movie/Movie";
 
 function App() {
   return (
@@ -30,7 +30,6 @@ function App() {
               <Route path="/post/:postId" element={<PostDetail />} />
               <Route path="/" element={<MainForm />} />
               <Route path="login" element={<Login />} />
-              {/* <Route path="/mypage" element={<Mypage />} /> */}
               <Route path="/movie" element={<Movie />} />
               <Route path="/recommendation" element={<Recommendation />} />
             </Routes>

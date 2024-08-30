@@ -83,7 +83,8 @@ const Movie = () => {
       if (response.status !== 200) {
         throw new Error("Network response was not ok.");
       }
-      setMovies(response.data || []);
+      setMovies(response.data || []); // 응답 데이터가 직접 영화 목록일 경우
+      // API에서 받은 데이터를 movies에 저장
     } catch (error) {
       console.error("영화 데이터를 가져오는 데 실패했습니다:", error);
       setError("영화 데이터를 가져오는 데 실패했습니다.");
@@ -94,7 +95,6 @@ const Movie = () => {
 
   return (
     <div className="mainpage">
-      <div className="title">영화 추천 페이지</div>
       <div className="main">
         {questions.map((question) => (
           <div key={question.id} className="question-group">

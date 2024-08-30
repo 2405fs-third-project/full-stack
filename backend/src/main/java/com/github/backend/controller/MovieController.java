@@ -6,8 +6,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import com.github.backend.dto.BoxOfficeResult;
 import com.github.backend.service.KobisService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,11 +36,17 @@ public class MovieController {
     private final KobisService kobisService;
 
     @GetMapping("/current")
-    public Map<String, Object> getCurrentMovies() {
-        LocalDate today = LocalDate.now();
-        return kobisService.getCurrentMovies(today);
+    public ResponseEntity<BoxOfficeResult> getCurrentMovies(@RequestParam(value = "date", required = false) String date) {
+        LocalDate targetDate = (date != null) ? LocalDate.parse(date) : LocalDate.now();
+        try {
+            // KobisService를 호출하여 현재 박스오피스 영화 목록을 가져옵니다.
+            BoxOfficeResult result = kobisService.getCurrentMovies(targetDate);
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            // 오류 발생 시 500 상태 코드와 null을 반환합니다.
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
-
 
     @PostMapping("/recommend") // 영화 추천
     public ResponseEntity<List<MovieResponse>> recommendMovies(@Valid @RequestBody MovieRecommendationRequest request) {
@@ -47,9 +55,9 @@ public class MovieController {
     }
 
     @GetMapping("/search")
-    public List<Movie> searchMovies(@RequestParam String searchQuery) {
+    public List<Map<String, Object>> searchMovies(@RequestParam String searchQuery) {
         String decodedQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8);
-        return movieService.searchMovies(decodedQuery);
+        return kobisService.searchMovies(decodedQuery);
     }
 
 
